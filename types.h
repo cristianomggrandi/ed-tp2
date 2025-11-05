@@ -1,3 +1,6 @@
+#ifndef TYPES_H
+#define TYPES_H
+
 struct GeoPoint
 {
     double x, y;
@@ -34,9 +37,11 @@ struct Segment
 
 struct Ride
 {
-    int *demands;
+    struct Demand *demands;
+    int demand_number;
     int duration;
     struct Segments *segments;
+    int segment_number;
     double distance;
     double efficiency;
 };
@@ -46,3 +51,4 @@ struct MinHeap
     int size;
     struct Demand *events;
 };
+#endif

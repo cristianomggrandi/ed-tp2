@@ -1,10 +1,13 @@
+#ifndef TYPES_H
 #include "types.h"
+#endif
 
 void insert_new(struct MinHeap *min_heap, struct Demand demand);
 struct Demand get_next(struct MinHeap *min_heap); // TODO: Pointer?
-int get_parent_index(int index);                  // TODO: Pointer?
-int get_left_node_index(int index);               // TODO: Pointer?
-int get_right_node_index(int index);              // TODO: Pointer?
+struct Demand peek(struct MinHeap *min_heap);
+int get_parent_index(int index);     // TODO: Pointer?
+int get_left_node_index(int index);  // TODO: Pointer?
+int get_right_node_index(int index); // TODO: Pointer?
 
 void insert_new(struct MinHeap *min_heap, struct Demand demand)
 {
@@ -68,6 +71,11 @@ struct Demand get_next(struct MinHeap *min_heap)
     }
 
     return next;
+}
+
+struct Demand peek(struct MinHeap *min_heap)
+{
+    return min_heap->events[0];
 }
 
 int get_parent_index(int index)
