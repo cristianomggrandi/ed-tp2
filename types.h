@@ -42,7 +42,7 @@ struct Ride
     struct Demand demands[MAX_CAPACITY];
     int demand_number;
     int duration;
-    struct Segments *segments;
+    struct Segment segments[MAX_CAPACITY];
     int segment_number;
     double distance;
     double efficiency;
