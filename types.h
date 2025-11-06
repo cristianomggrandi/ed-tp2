@@ -1,6 +1,8 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#define MAX_CAPACITY 10
+
 struct GeoPoint
 {
     double x, y;
@@ -37,7 +39,7 @@ struct Segment
 
 struct Ride
 {
-    struct Demand *demands;
+    struct Demand demands[MAX_CAPACITY];
     int demand_number;
     int duration;
     struct Segments *segments;

@@ -6,8 +6,6 @@
 #include "types.h"
 #endif
 
-#define MAX_SIZE 100
-
 double calculate_efficiency();
 
 // int main(int argc, char **argv)
@@ -32,14 +30,23 @@ int main()
     fscanf(file, "%d", &demand_number);
 
     // struct MinHeap min_heap;
+
     struct Demand demands[demand_number];
     struct Demand demand;
-    struct Demand ride_demands[max_capacity];
-    struct Ride rides[demand_number];
-    int ride_demand_number = 0, ride_number = 0;
 
-    // min_heap.size = 0;
-    // min_heap.events = demands;
+    // struct Demand ride_demands[max_capacity];
+
+    struct Ride rides[demand_number]; // Initialize all fields to 0
+    for (int i = 0; i < demand_number; i++)
+    {
+        printf("Tem que ser sempre zero => %d\n", rides[i].demand_number);
+    }
+
+    // Counter for the number of demands on the current ride
+    // int ride_demand_number = 0;
+
+    // Counter for the number of combined rides
+    int ride_number = 0;
 
     for (int i = 0; i < demand_number; i++)
     {
@@ -52,7 +59,6 @@ int main()
                &demand.destination.y);
 
         demands[i] = demand;
-        // insert_new(&min_heap, demand);
     }
 
     fclose(file);
@@ -61,63 +67,73 @@ int main()
     {
         demand = demands[i];
 
-        // printf("\nTESTE 1: %d - %d", ride_demand_number, demand.time);
-        if (ride_demand_number == 0)
+        printf("\nTESTE 1: %d - %d", rides[ride_number].demand_number, demand.time);
+        if (rides[ride_number].demand_number == 0)
         {
-            ride_demands[ride_demand_number++] = demand;
-
-            rides[ride_number].demands = ride_demands;
+            rides[ride_number].demands[0] = demand;
             rides[ride_number].demand_number = 1;
-            ride_number++;
 
             continue;
         }
 
-        struct Demand main_demand = ride_demands[0];
+        // Flag to know if it meets the distance criterias
+        int meets_distance_criteria = 1;
 
-        if (ride_demand_number == max_capacity ||
-            (demand.time - main_demand.time) > max_departure_interval
-            // || (get_distance(demand.origin, main_demand.origin) > max_origin_distance) ||
-            // (get_distance(demand.destination, main_demand.destination) > max_destination_distance)
-        )
+        for (int j = 0; j < rides[ride_number].demand_number; j++)
         {
-            // TODO: Adicionar à lista de corridas
+            printf("\nMAX DIST: %f - %f", max_origin_distance, max_destination_distance);
+            printf("\nPontos: (%f, %f) (%f, %f)", demand.destination.x, demand.destination.y, rides[ride_number].demands[j].destination.x, rides[ride_number].demands[j].destination.y);
+            printf("\nDIST: %f - %f", get_distance(demand.origin, rides[ride_number].demands[j].origin), get_distance(demand.destination, rides[ride_number].demands[j].destination));
 
-            printf("\nArray: (antes) ");
-            for (int i = 0; i < ride_demand_number; i++)
-                printf("%d.", ride_demands[i].id);
-            printf("\n");
-
-            // TODO?
-            ride_demand_number = 0;
-        }
-
-        // TODO: Usar
-        int meets_criteria = 1;
-
-        for (int j = 0; j < ride_demand_number; j++)
-        {
             if (
-                (get_distance(demand.origin, ride_demands[j].origin) > max_origin_distance) ||
-                (get_distance(demand.destination, ride_demands[j].destination) > max_destination_distance))
+                (get_distance(demand.origin, rides[ride_number].demands[j].origin) > max_origin_distance) ||
+                (get_distance(demand.destination, rides[ride_number].demands[j].destination) > max_destination_distance))
             {
-                // TODO: Lidar com o caso de não ser compatível (criar nova corrida)
-                meets_criteria = 0;
+                meets_distance_criteria = 0;
                 break;
             }
         }
 
-        double new_efficiency = calculate_efficiency(rides[ride_number - 1], demand);
-        printf("\nEfficiency: %f", new_efficiency);
-
-        if (new_efficiency > min_ride_efficiencty)
+        struct Demand main_demand = rides[ride_number].demands[0];
+        if ((rides[ride_number].demand_number > 0) && ((rides[ride_number].demand_number == max_capacity) ||
+                                                       (demand.time - main_demand.time) > max_departure_interval))
         {
-            ride_demands[ride_demand_number + 1] = demand;
-            ride_demand_number++;
+            // Não respeita restrição de tempo máximo de intervalo de início de corrida, então deve finalizar a corrida atual e criar uma nova
+
+            printf("\nNEW RIDE: %d -> %d", ride_number, ride_number + 1);
+            ride_number++;
         }
 
-        // TODO: Lidar com caso em que não tem eficiência mínima (finalizar corrida e criar uma nova)
+        // TODO: Remover (é somente para log)
+        if (meets_distance_criteria == 1)
+        {
+            double new_efficiency = calculate_efficiency(rides[ride_number], demand);
+            printf("\nEfficiency: %f", new_efficiency);
+        }
+
+        if (meets_distance_criteria && calculate_efficiency(rides[ride_number], demand) > min_ride_efficiencty)
+        {
+            rides[ride_number].demands[rides[ride_number].demand_number] = demand;
+            rides[ride_number].demand_number++;
+
+            printf("\nADD: %d - %d", rides[ride_number].demand_number, demand.time);
+
+            // ride_demand_number++;
+        }
+        else
+        {
+            printf("\nTESTE 5: %d - %d", rides[ride_number].demand_number, demand.time);
+            ride_number++;
+            // ride_demand_number = 0;
+        }
     }
+
+    for (int i = 0; i < ride_number; i++)
+    {
+        printf("\nRIDE %d: %d", i, rides[i].demand_number);
+    }
+
+
 
     return 0;
 }
