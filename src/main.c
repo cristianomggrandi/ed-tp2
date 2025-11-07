@@ -82,10 +82,10 @@ int main()
         struct Demand main_demand = rides[ride_number].demands[0];
 
         if ((rides[ride_number].demand_number > 0) &&
-                ((meets_distance_criteria == 0) ||
-                 (rides[ride_number].demand_number == max_capacity) || // TODO: Essa linha deve ir pro final do loop
-                 (double)(demand.time - main_demand.time) > max_departure_interval) ||
-            (calculate_efficiency(rides[ride_number], demand) < min_ride_efficiencty))
+            (((meets_distance_criteria == 0) ||
+              (rides[ride_number].demand_number == max_capacity) || // TODO: Essa linha deve ir pro final do loop
+              (double)(demand.time - main_demand.time) > max_departure_interval) ||
+             (calculate_efficiency(rides[ride_number], demand) < min_ride_efficiencty)))
         {
             // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
             ride_number++;

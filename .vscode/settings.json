@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "cmath": "c"
+        "cmath": "c",
+        "minheap.h": "c",
+        "types.h": "c"
     }
 }
