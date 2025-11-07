@@ -115,8 +115,8 @@ int main()
         printf("%.2f %.2f", rides[i].segments[0].start.x, rides[i].segments[0].start.y);
         for (int j = 0; j < rides[i].segment_number; j++)
             printf(" %.2f %.2f", rides[i].segments[j].end.x, rides[i].segments[j].end.y);
-        printf("\n");
     }
+    printf("\n");
 
     return 0;
 }
