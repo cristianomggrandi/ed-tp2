@@ -6,6 +6,7 @@
 double get_distance(struct GeoPoint a, struct GeoPoint b);
 double calculate_efficiency(struct Ride ride, struct Demand demand);
 double get_ride_total_distance(struct Ride ride);
+void get_ride_segments(struct Ride *ride);
 
 double get_distance(struct GeoPoint a, struct GeoPoint b)
 {
@@ -41,4 +42,30 @@ double get_ride_total_distance(struct Ride ride)
     }
 
     return distance;
+}
+
+void get_ride_segments(struct Ride *ride)
+{
+    ride->segment_number = 2 * ride->demand_number - 1;
+
+    for (int i = 0; i < ride->demand_number - 1; i++)
+    {
+        struct Segment collect_segment;
+        collect_segment.start = ride->demands[i].origin;
+        collect_segment.end = ride->demands[i + 1].origin;
+
+        ride->segments[i] = collect_segment;
+
+        struct Segment destination_segment;
+        destination_segment.start = ride->demands[i].destination;
+        destination_segment.end = ride->demands[i + 1].destination;
+
+        ride->segments[i + ride->demand_number] = destination_segment;
+    }
+
+    struct Segment main_ride_segment;
+    main_ride_segment.start = ride->demands[ride->demand_number - 1].origin;
+    main_ride_segment.end = ride->demands[0].destination;
+
+    ride->segments[ride->demand_number - 1] = main_ride_segment;
 }

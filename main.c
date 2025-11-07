@@ -6,9 +6,6 @@
 #include "types.h"
 #endif
 
-double calculate_efficiency();
-
-// int main(int argc, char **argv)
 int main()
 {
     int max_capacity, demand_number;
@@ -131,7 +128,17 @@ int main()
     ride_number++;
 
     for (int i = 0; i < ride_number; i++)
-        printf("\nRIDE %d: %d", i + 1, rides[i].demand_number);
+    {
+        double total_distance = get_ride_total_distance(rides[i]);
+
+        get_ride_segments(&(rides[i]));
+
+        printf("\n%.2f %.2f %d ", rides[i].demands[0].time + (total_distance / speed), total_distance, 2 * rides[i].demand_number);
+
+        printf("%.2f %.2f", rides[i].segments[0].start.x, rides[i].segments[0].start.y);
+        for (int j = 0; j < rides[i].segment_number; j++)
+            printf(" %.2f %.2f", rides[i].segments[j].end.x, rides[i].segments[j].end.y);
+    }
 
     return 0;
 }
