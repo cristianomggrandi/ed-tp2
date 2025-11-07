@@ -11,20 +11,13 @@ int main()
     int max_capacity, demand_number;
     double speed, max_departure_interval, max_origin_distance, max_destination_distance, min_ride_efficiencty;
 
-    FILE *file = fopen("inputs.txt", "r");
-    if (file == NULL)
-    {
-        printf("Error: Could not open inputs.txt\n");
-        return 1;
-    }
-
-    fscanf(file, "%d", &max_capacity);
-    fscanf(file, "%lf", &speed);
-    fscanf(file, "%lf", &max_departure_interval);
-    fscanf(file, "%lf", &max_origin_distance);
-    fscanf(file, "%lf", &max_destination_distance);
-    fscanf(file, "%lf", &min_ride_efficiencty);
-    fscanf(file, "%d", &demand_number);
+    scanf("%d", &max_capacity);
+    scanf("%lf", &speed);
+    scanf("%lf", &max_departure_interval);
+    scanf("%lf", &max_origin_distance);
+    scanf("%lf", &max_destination_distance);
+    scanf("%lf", &min_ride_efficiencty);
+    scanf("%d", &demand_number);
 
     struct Demand demands[demand_number];
     struct Demand demand;
@@ -40,18 +33,16 @@ int main()
 
     for (int i = 0; i < demand_number; i++)
     {
-        fscanf(file, "%d %d %lf %lf %lf %lf",
-               &demand.id,
-               &demand.time,
-               &demand.origin.x,
-               &demand.origin.y,
-               &demand.destination.x,
-               &demand.destination.y);
+        scanf("%d %d %lf %lf %lf %lf",
+              &demand.id,
+              &demand.time,
+              &demand.origin.x,
+              &demand.origin.y,
+              &demand.destination.x,
+              &demand.destination.y);
 
         demands[i] = demand;
     }
-
-    fclose(file);
 
     for (int i = 0; i < demand_number; i++)
     {

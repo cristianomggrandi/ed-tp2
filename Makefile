@@ -2,12 +2,13 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -Iinclude
 LDFLAGS = -lm
-TARGET = tp2.out
+TARGET = bin/tp2.out
 TARGET_WIN = tp2.exe
 
 # Directories
 SRC_DIR = src
 INC_DIR = include
+BIN_DIR = bin
 
 # Source files
 SOURCES = $(SRC_DIR)/main.c
@@ -16,7 +17,11 @@ SOURCES = $(SRC_DIR)/main.c
 OBJECTS = $(SOURCES:.c=.o)
 
 # Default target
-all: $(TARGET)
+all: $(BIN_DIR) $(TARGET)
+
+# Create bin directory if it doesn't exist
+$(BIN_DIR):
+	mkdir $(BIN_DIR)
 
 # Link object files to create executable
 $(TARGET): $(OBJECTS)
@@ -33,6 +38,7 @@ windows: $(OBJECTS)
 # Clean build artifacts
 clean:
 	rm -f $(OBJECTS) $(TARGET) $(TARGET_WIN)
+	-rmdir $(BIN_DIR) 2>/dev/null || true
 
 # Phony targets
 .PHONY: all clean windows
