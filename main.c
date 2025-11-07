@@ -26,21 +26,14 @@ int main()
     fscanf(file, "%lf", &min_ride_efficiencty);
     fscanf(file, "%d", &demand_number);
 
-    // struct MinHeap min_heap;
-
     struct Demand demands[demand_number];
     struct Demand demand;
 
-    // struct Demand ride_demands[max_capacity];
+    struct Ride rides[demand_number];
 
-    struct Ride rides[demand_number]; // Initialize all fields to 0
+    // Initialize every ride's demand counter to 0
     for (int i = 0; i < demand_number; i++)
-    {
-        printf("Tem que ser sempre zero => %d\n", rides[i].demand_number);
-    }
-
-    // Counter for the number of demands on the current ride
-    // int ride_demand_number = 0;
+        rides[i].demand_number = 0;
 
     // Counter for the number of combined rides
     int ride_number = 0;
@@ -109,7 +102,21 @@ int main()
         {
             // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
 
-            // printf("\nNEW RIDE: %d -> %d", ride_number, ride_number + 1);
+            printf("\nNEW RIDE: %d -> %d", ride_number, ride_number + 1);
+            if (ride_number == 15)
+            {
+                printf("\n");
+                printf("\nWhy: %d %d %d %d %f %f %f %f",
+                       (rides[ride_number].demand_number),
+                       (meets_distance_criteria),
+                       rides[ride_number].demand_number, max_capacity,
+                       (double)(demand.time - main_demand.time), max_departure_interval,
+                       calculate_efficiency(rides[ride_number], demand), min_ride_efficiencty);
+
+                printf("\n");
+                printf("\n");
+            }
+
             ride_number++;
 
             rides[ride_number].demands[0] = demand;
@@ -121,7 +128,7 @@ int main()
         rides[ride_number].demands[rides[ride_number].demand_number] = demand;
         rides[ride_number].demand_number++;
 
-        // printf("\nADD: %d - %d", rides[ride_number].demand_number, demand.time);
+        printf("\nADD: %d - %d", rides[ride_number].demand_number, demand.time);
     }
 
     // Account for the last ride
