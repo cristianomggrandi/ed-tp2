@@ -81,44 +81,14 @@ int main()
 
         struct Demand main_demand = rides[ride_number].demands[0];
 
-        // printf("\n\nTeste infos:\n");
-        // printf("rides[ride_number].demand_number: %d\n", rides[ride_number].demand_number);
-        // printf("meets_distance_criteria: %d\n", meets_distance_criteria);
-        // printf("rides[ride_number].demand_number: %d\n", rides[ride_number].demand_number);
-        // printf("max_capacity: %d\n", max_capacity);
-        // printf("demand.time: %d\n", demand.time);
-        // printf("main_demand.time: %d\n", main_demand.time);
-        // printf("max_departure_interval: %f\n", (double)max_departure_interval);
-        // printf("calculate_efficiency: %lf\n", calculate_efficiency(rides[ride_number], demand));
-        // printf("min_ride_efficiencty: %lf\n", min_ride_efficiencty);
-        // printf("test_efficiency: %d\n", calculate_efficiency(rides[ride_number], demand) > min_ride_efficiencty);
-        // printf("\n");
-
         if ((rides[ride_number].demand_number > 0) &&
                 ((meets_distance_criteria == 0) ||
                  (rides[ride_number].demand_number == max_capacity) || // TODO: Essa linha deve ir pro final do loop
                  (double)(demand.time - main_demand.time) > max_departure_interval) ||
-            (calculate_efficiency(rides[ride_number], demand) > min_ride_efficiencty))
+            (calculate_efficiency(rides[ride_number], demand) < min_ride_efficiencty))
         {
             // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
-
-            printf("\nNEW RIDE: %d -> %d", ride_number, ride_number + 1);
-            if (ride_number == 15)
-            {
-                printf("\n");
-                printf("\nWhy: %d %d %d %d %f %f %f %f",
-                       (rides[ride_number].demand_number),
-                       (meets_distance_criteria),
-                       rides[ride_number].demand_number, max_capacity,
-                       (double)(demand.time - main_demand.time), max_departure_interval,
-                       calculate_efficiency(rides[ride_number], demand), min_ride_efficiencty);
-
-                printf("\n");
-                printf("\n");
-            }
-
             ride_number++;
-
             rides[ride_number].demands[0] = demand;
             rides[ride_number].demand_number = 1;
 
@@ -128,7 +98,7 @@ int main()
         rides[ride_number].demands[rides[ride_number].demand_number] = demand;
         rides[ride_number].demand_number++;
 
-        printf("\nADD: %d - %d", rides[ride_number].demand_number, demand.time);
+        // printf("\nADD: %d - %d", rides[ride_number].demand_number, demand.time);
     }
 
     // Account for the last ride
@@ -145,6 +115,7 @@ int main()
         printf("%.2f %.2f", rides[i].segments[0].start.x, rides[i].segments[0].start.y);
         for (int j = 0; j < rides[i].segment_number; j++)
             printf(" %.2f %.2f", rides[i].segments[j].end.x, rides[i].segments[j].end.y);
+        printf("\n");
     }
 
     return 0;

@@ -5,6 +5,7 @@
 
 double get_distance(struct GeoPoint a, struct GeoPoint b);
 double calculate_efficiency(struct Ride ride, struct Demand demand);
+double get_sum_of_ride_demands_distances(struct Ride ride);
 double get_ride_total_distance(struct Ride ride);
 void get_ride_segments(struct Ride *ride);
 
@@ -18,17 +19,27 @@ double calculate_efficiency(struct Ride ride, struct Demand demand)
     if (ride.demand_number == 0)
         return 1.0;
 
-    double old_distance = get_ride_total_distance(ride);
+    double old_total_distance = get_sum_of_ride_demands_distances(ride);
+    double demand_distance = get_distance(demand.origin, demand.destination);
 
+    double old_distance = get_ride_total_distance(ride);
     double origin_distance = get_distance(ride.demands[ride.demand_number - 1].origin, demand.origin);
     double destination_distance = get_distance(ride.demands[ride.demand_number - 1].destination, demand.destination);
     double new_distance = old_distance + origin_distance + destination_distance;
 
-    printf("\n%f + %f + %f = %f", old_distance, origin_distance, destination_distance, old_distance + origin_distance + destination_distance);
-    printf("\nHypot.: %f", hypot(609.81781 - 609.76348, 7799.19578 - 7799.22100));
-    printf("\nEff.: %f", (old_distance + origin_distance + destination_distance) / (old_distance));
+    double efficiency = (old_total_distance + demand_distance) / new_distance;
 
-    return new_distance / old_distance;
+    return efficiency;
+}
+
+double get_sum_of_ride_demands_distances(struct Ride ride)
+{
+    double sum = 0;
+
+    for (int i = 0; i < ride.demand_number; i++)
+        sum += get_distance(ride.demands[i].origin, ride.demands[i].destination);
+
+    return sum;
 }
 
 double get_ride_total_distance(struct Ride ride)
