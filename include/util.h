@@ -1,3 +1,6 @@
+#ifndef UTIL_H
+#define UTIL_H
+
 #include <math.h>
 #ifndef TYPES_H
 #include "types.h"
@@ -84,3 +87,4 @@ void get_ride_segments(struct Ride *ride)
 
     ride->segments[ride->demand_number - 1] = main_ride_segment;
 }
+#endif

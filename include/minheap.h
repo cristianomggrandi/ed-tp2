@@ -1,10 +1,13 @@
 #include <stdlib.h>
+#ifndef UTIL_H
+#include "util.h"
+#endif
 #ifndef TYPES_H
 #include "types.h"
 #endif
 
 void initialize(struct MinHeap *min_heap, int array_size);
-void insert_new(struct MinHeap *min_heap, struct Ride ride);
+void insert_new(struct MinHeap *min_heap, struct Ride ride, double speed);
 struct Ride get_next(struct MinHeap *min_heap); // TODO: Pointer?
 struct Ride peek(struct MinHeap *min_heap);
 int get_parent_index(int index);     // TODO: Pointer?
@@ -22,14 +25,19 @@ void initialize(struct MinHeap *min_heap, int array_size)
     min_heap->size = 0;
 }
 
-void insert_new(struct MinHeap *min_heap, struct Ride ride)
+void insert_new(struct MinHeap *min_heap, struct Ride ride, double speed)
 {
     int index = min_heap->size;
     int parent_index = get_parent_index(index);
 
+    get_ride_segments(&(ride));
+
+    double total_distance = get_ride_total_distance(ride);
+    ride.end_time = ((double)ride.demands[0].time) + (total_distance / speed);
+
     min_heap->rides[index] = ride;
 
-    while (min_heap->rides[parent_index].demands[0].time > min_heap->rides[index].demands[0].time)
+    while (min_heap->rides[parent_index].end_time > min_heap->rides[index].end_time)
     {
         struct Ride temp = min_heap->rides[parent_index];
         min_heap->rides[parent_index] = min_heap->rides[index];
@@ -55,9 +63,9 @@ struct Ride get_next(struct MinHeap *min_heap)
 
     while (left_node_index < min_heap->size)
     {
-        int node_time = min_heap->rides[index].demands[0].time;
-        int left_node_time = min_heap->rides[left_node_index].demands[0].time;
-        int right_node_time = min_heap->rides[right_node_index].demands[0].time;
+        int node_time = min_heap->rides[index].end_time;
+        int left_node_time = min_heap->rides[left_node_index].end_time;
+        int right_node_time = min_heap->rides[right_node_index].end_time;
 
         if (node_time <= left_node_time && node_time <= right_node_time)
             break;

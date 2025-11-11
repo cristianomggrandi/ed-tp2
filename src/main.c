@@ -77,7 +77,7 @@ int main()
         {
             // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
 
-            insert_new(&scheduler, new_ride);
+            insert_new(&scheduler, new_ride, speed);
 
             new_ride.demands[0] = demand;
             new_ride.demand_number = 1;
@@ -90,7 +90,7 @@ int main()
     }
 
     // Account for the last ride
-    insert_new(&scheduler, new_ride);
+    insert_new(&scheduler, new_ride, speed);
 
     while (scheduler.size > 0)
     {
@@ -98,9 +98,7 @@ int main()
 
         double total_distance = get_ride_total_distance(ride);
 
-        get_ride_segments(&(ride));
-
-        printf("\n%.2f %.2f %d ", ride.demands[0].time + (total_distance / speed), total_distance, 2 * ride.demand_number);
+        printf("\n%.2f %.2f %d ", ride.end_time, total_distance, 2 * ride.demand_number);
 
         printf("%.2f %.2f", ride.segments[0].start.x, ride.segments[0].start.y);
         for (int j = 0; j < ride.segment_number; j++)

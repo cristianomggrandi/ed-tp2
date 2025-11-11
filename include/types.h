@@ -44,6 +44,7 @@ struct Ride
     // int duration;
     struct Segment segments[2 * MAX_CAPACITY];
     int segment_number;
+    double end_time;
     // double distance;
     // double efficiency;
 };
