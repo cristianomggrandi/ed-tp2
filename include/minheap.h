@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #ifndef TYPES_H
 #include "types.h"
 #endif
@@ -12,14 +13,13 @@ int get_right_node_index(int index); // TODO: Pointer?
 
 void initialize(struct MinHeap *min_heap, int array_size)
 {
-    struct Ride rides[array_size];
+    min_heap->rides = (struct Ride *)malloc(array_size * sizeof(struct Ride));
 
     // Initialize every ride's ride counter to 0
     for (int i = 0; i < array_size; i++)
-        rides[i].demand_number = 0;
+        min_heap->rides[i].demand_number = 0;
 
     min_heap->size = 0;
-    min_heap->rides = rides;
 }
 
 void insert_new(struct MinHeap *min_heap, struct Ride ride)

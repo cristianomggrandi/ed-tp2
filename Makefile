@@ -13,6 +13,9 @@ BIN_DIR = bin
 # Source files
 SOURCES = $(SRC_DIR)/main.c
 
+# Header files
+HEADERS = $(INC_DIR)/types.h $(INC_DIR)/util.h $(INC_DIR)/minheap.h
+
 # Object files
 OBJECTS = $(SOURCES:.c=.o)
 
@@ -32,7 +35,7 @@ windows: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(TARGET_WIN) $(LDFLAGS)
 
 # Compile source files to object files
-%.o: %.c
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Clean build artifacts
