@@ -41,16 +41,16 @@ struct Ride
 {
     struct Demand demands[MAX_CAPACITY];
     int demand_number;
-    int duration;
-    struct Segment segments[MAX_CAPACITY];
+    // int duration;
+    struct Segment segments[2 * MAX_CAPACITY];
     int segment_number;
-    double distance;
-    double efficiency;
+    // double distance;
+    // double efficiency;
 };
 
 struct MinHeap
 {
     int size;
-    struct Demand *events;
+    struct Ride *rides;
 };
 #endif
