@@ -3,55 +3,54 @@
 
 #define MAX_CAPACITY 10
 
-struct GeoPoint
+typedef struct GeoPoint
 {
     double x, y;
-};
+    struct GeoPoint *next;
+} GeoPoint;
 
-struct Demand
+typedef struct Demand
 {
     int id;
     int time;
-    struct GeoPoint origin;
-    struct GeoPoint destination;
-};
+    GeoPoint origin;
+    GeoPoint destination;
+} Demand;
 
-struct RideStop
+typedef struct RideStop
 {
     // 1 - Coleta
     // 2 - Entrega
     int type;
-    struct GeoPoint coordinates;
+    GeoPoint coordinates;
     int demand_id;
-};
+} RideStop;
 
-struct Segment
+typedef struct Segment
 {
     // 1 - Coleta (2 pontos de embarque)
     // 2 - Entrega (2 pontos de desembarque)
     // 3 - Deslocamento (1 embarque e um desembarque)
     int type;
-    struct GeoPoint start;
-    struct GeoPoint end;
-    int duration;
-    double distance;
-};
-
-struct Ride
-{
-    struct Demand demands[MAX_CAPACITY];
-    int demand_number;
+    GeoPoint start;
+    GeoPoint end;
     // int duration;
-    struct Segment segments[2 * MAX_CAPACITY];
-    int segment_number;
-    double end_time;
-    // double distance;
-    // double efficiency;
-};
+    double distance;
+    struct Segment *next;
+} Segment;
 
-struct MinHeap
+typedef struct Ride
+{
+    int demand_number;
+    Demand demands[MAX_CAPACITY];
+    int stop_number;
+    GeoPoint *stops;
+    double end_time;
+} Ride;
+
+typedef struct MinHeap
 {
     int size;
-    struct Ride *rides;
-};
+    Ride *rides;
+} MinHeap;
 #endif
