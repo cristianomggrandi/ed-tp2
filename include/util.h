@@ -10,6 +10,7 @@ double get_distance(GeoPoint a, GeoPoint b);
 double calculate_efficiency(Ride ride);
 double get_sum_of_ride_demands_distances(Ride ride);
 double get_ride_total_distance(Ride ride);
+double get_distance_without_last_demand(Ride ride);
 void add_ride_stops(Ride *ride, Demand demand);
 void remove_last_added_stops(Ride *ride);
 void get_ride_stop(Ride *ride);
@@ -21,22 +22,26 @@ double get_distance(GeoPoint a, GeoPoint b)
 
 double calculate_efficiency(Ride ride)
 {
-    if (ride.stop_number == 1)
+    if (ride.stop_number < 2)
+        return -1;
+
+    if (ride.stop_number == 2)
         return 1.0;
-
-    // TODO:
-
-    double old_total_distance = get_sum_of_ride_demands_distances(ride);
-    // printf("\ndistance sum: %lf", old_total_distance);
 
     double total_distance = get_ride_total_distance(ride);
     if (total_distance == -1)
         printf("\nERRO: Erro calculando distancia total para calcular eficiencia");
-    // double origin_distance = get_distance(ride.demands[ride.demand_number - 1].origin, demand.origin);
-    // double destination_distance = get_distance(ride.demands[ride.demand_number - 1].destination, demand.destination);
-    // double new_distance = old_distance + origin_distance + destination_distance;
 
-    double efficiency = old_total_distance / total_distance;
+    // double original_distance = get_distance_without_last_demand(ride);
+
+    // double original_distance = get_distance(ride.demands[0].origin, ride.demands[0].destination);
+    double original_distance = get_sum_of_ride_demands_distances(ride);
+
+    double efficiency = original_distance / total_distance;
+    // double efficiency2 = total_distance / original_distance;
+
+    printf("\nEFF.: %lf / %lf = %lf", original_distance, total_distance, efficiency);
+    // printf("\nEFF 2.: %lf / %lf = %lf", total_distance, original_distance, efficiency2);
 
     return efficiency;
 }
@@ -59,16 +64,15 @@ double get_ride_total_distance(Ride ride)
     GeoPoint *stop = ride.stops;
 
     if (stop == NULL || stop->next == NULL)
-    {
-        printf("\n%p", stop);
         return -1;
-    }
 
     double distance = 0;
 
     while (stop->next != NULL)
     {
         // printf("\nANTES: %lf", distance);
+        // printf("\nANTES get_distance: %p -> %p", stop, stop->next);
+        // printf("\nSUM: (%lf, %lf) e (%lf, %lf)", stop->x, stop->y, stop->next->x, stop->next->y);
         distance += get_distance(*stop, *(stop->next));
         // printf("\nDEPOIS: %lf", distance);
         stop = stop->next;
@@ -77,9 +81,59 @@ double get_ride_total_distance(Ride ride)
     return distance;
 }
 
+double get_distance_without_last_demand(Ride ride)
+{
+    GeoPoint *stop = ride.stops;
+
+    if (stop == NULL || stop->next == NULL)
+        return -1;
+
+    double distance = 0;
+    int i = 0;
+
+    while (stop->next != NULL)
+    {
+        GeoPoint *next = stop->next;
+
+        // Penúltimo destino
+        if (i == ride.stop_number - 2)
+            break;
+
+        if ((i == ride.stop_number / 2 - 2) && next->next != NULL)
+        {
+            next = next->next;
+            i++;
+        }
+
+        // printf("\nSUM 2: (%lf, %lf) e (%lf, %lf)", stop->x, stop->y, stop->next->x, stop->next->y);
+        distance += get_distance(*stop, *next);
+
+        stop = next;
+
+        // if (i == ride.stop_number / 2 - 2 || i == ride.stop_number - 1)
+        //     stop = stop->next;
+
+        i++;
+    }
+
+    return distance;
+}
+
 void add_ride_stops(Ride *ride, Demand demand)
 {
     // TODO: Mover funções de Ride para um arquivo isolado
+
+    {
+        GeoPoint *stop = ride->stops;
+
+        printf("\nAdicionar ANTES:");
+
+        while (stop != NULL)
+        {
+            printf("\n(%lf, %lf)", stop->x, stop->y);
+            stop = stop->next;
+        }
+    }
 
     if (ride->stop_number == 0)
     {
@@ -105,33 +159,50 @@ void add_ride_stops(Ride *ride, Demand demand)
 
     // Posiciona stop no stopo que liga a coleta k ao destino 0
     for (int i = 0; i < ride->stop_number / 2 - 1; i++)
+    {
         stop = stop->next;
+    }
 
-    // Cria novo stop
+    // printf("\nPOINTER 1: %p -> %p", stop, stop->next);
+
+    // Nova coleta
     GeoPoint *new_stop = malloc(sizeof(GeoPoint));
     new_stop->next = stop->next;
+    new_stop->x = demand.origin.x;
+    new_stop->y = demand.origin.y;
 
     // Conecta a última coleta anterior à nova última coleta
     stop->next = new_stop;
 
-    // printf("\n4: %lf, %lf", stop->x, stop->y);
+    // printf("\nPOINTER 2: %p -> %p", stop, stop->next);
 
     // Posiciona stop no fim da lista
     while (stop->next != NULL)
     {
-        // printf("\n4,5: %p", stop);
         stop = stop->next;
     }
 
-    // printf("\n5: %lf, %lf", stop->x, stop->y);
+    // printf("\nPOINTER 3: %p -> %p", stop, stop->next);
     // Preenche novo stop ao final da lista
     stop->next = malloc(sizeof(GeoPoint));
     stop->next->x = demand.destination.x;
     stop->next->y = demand.destination.y;
     stop->next->next = NULL;
+    // printf("\nPOINTER 4: %p -> %p", stop, stop->next);
 
     ride->stop_number += 2;
-    // printf("\nTESTE 2: %d", ride->stop_number);
+
+    {
+        GeoPoint *stop = ride->stops;
+
+        printf("\nAdicionar DEPOIS:");
+
+        while (stop != NULL)
+        {
+            printf("\n(%lf, %lf)", stop->x, stop->y);
+            stop = stop->next;
+        }
+    }
 }
 
 void remove_last_added_stops(Ride *ride)
@@ -141,6 +212,8 @@ void remove_last_added_stops(Ride *ride)
 
     if (ride->stop_number == 2)
     {
+        printf("\nstopnumber == 2 => %p -> %p", ride->stops, ride->stops->next);
+
         free(ride->stops->next);
         free(ride->stops);
         ride->stops = NULL;
@@ -160,11 +233,13 @@ void remove_last_added_stops(Ride *ride)
     free(stop->next);
     stop->next = next_next_stop;
 
-    // Posiciona stop no penúltimo stopo
+    // Posiciona stop no penúltimo destino
     while (stop->next->next != NULL)
         stop = stop->next;
 
-    // Remove último stopo
+    // printf("\nPOINTER REMOCAO: %p -> %p -> %p", stop, stop->next, stop->next->next);
+
+    // Remove último destino
     free(stop->next);
     stop->next = NULL;
 

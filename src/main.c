@@ -10,14 +10,14 @@
 int main()
 {
     int max_capacity, demand_number;
-    double speed, max_departure_interval, max_origin_distance, max_destination_distance, min_ride_efficiencty;
+    double speed, max_departure_interval, max_origin_distance, max_destination_distance, min_ride_efficiency;
 
     scanf("%d", &max_capacity);
     scanf("%lf", &speed);
     scanf("%lf", &max_departure_interval);
     scanf("%lf", &max_origin_distance);
     scanf("%lf", &max_destination_distance);
-    scanf("%lf", &min_ride_efficiencty);
+    scanf("%lf", &min_ride_efficiency);
     scanf("%d", &demand_number);
 
     struct Demand demands[demand_number];
@@ -91,6 +91,11 @@ int main()
             // TODO: Essa linha deve ir pro final do loop (SERÁ?)
             should_stop = true;
         }
+        else if (new_ride->demand_number == max_capacity)
+        {
+            printf("\n%d => new_ride->demand_number == max_capacity", i);
+            should_stop = true;
+        }
         else
         {
             add_ride_stops(new_ride, demand);
@@ -98,17 +103,23 @@ int main()
             new_ride->demands[new_ride->demand_number] = demand;
             new_ride->demand_number++;
 
-            if (calculate_efficiency(*new_ride) < min_ride_efficiencty)
+            double efficiency = calculate_efficiency(*new_ride);
+            if (efficiency < 0)
+                printf("\nERRO: Quantidade de paradas invalida: %d", new_ride->stop_number);
+            if (efficiency > 1)
+                printf("\nERRO: Algo errado ocorreu no calculo de eficiencia: %lf", efficiency);
+
+            if (efficiency < min_ride_efficiency)
             {
                 should_stop = true;
-                printf("\n%d -> Removendo demanda: %d", scheduler.size, demand.id);
+                printf("\n%d -> Removendo demanda: %d / %d", scheduler.size, demand.id, demand.time);
                 remove_last_added_stops(new_ride);
                 new_ride->demand_number--;
             }
-            else if (new_ride->demand_number == max_capacity)
+            else
             {
-                printf("\n%d => new_ride->demand_number == max_capacity", i);
-                should_stop = true;
+                insert_new(&scheduler, &new_ride, speed);
+                continue;
             }
         }
 
