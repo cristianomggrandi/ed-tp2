@@ -27,6 +27,7 @@ void initialize(MinHeap *min_heap, int array_size)
 
 void insert_new(MinHeap *min_heap, Ride **ride_p, double speed)
 {
+    // printf("\n%d -> Primeira demanda: %d", min_heap->size, (*ride_p)->demands[0].id);
     Ride *ride = *ride_p;
 
     int index = min_heap->size;
@@ -49,11 +50,7 @@ void insert_new(MinHeap *min_heap, Ride **ride_p, double speed)
 
     min_heap->size++;
 
-    // Realoca memória para uma nova corrida
-    *ride_p = (Ride *)malloc(sizeof(Ride));
-    (*ride_p)->demand_number = 0;
-    (*ride_p)->stop_number = 0;
-    (*ride_p)->stops = NULL;
+    *ride_p = NULL;
 }
 
 Ride get_next(MinHeap *min_heap)

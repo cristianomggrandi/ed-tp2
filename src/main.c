@@ -39,18 +39,25 @@ int main()
         demands[i] = demand;
     }
 
-    struct Ride *new_ride = (Ride *)malloc(sizeof(Ride));
-    new_ride->demand_number = 0;
-    new_ride->stop_number = 0;
+    struct Ride *new_ride = NULL;
 
     for (int i = 0; i < demand_number; i++)
     {
         demand = demands[i];
 
-        if (new_ride->demand_number == 0)
+        if (new_ride == NULL)
         {
+            new_ride = (Ride *)malloc(sizeof(Ride));
+            new_ride->demand_number = 0;
+            new_ride->stop_number = 0;
+            new_ride->stops = NULL;
             new_ride->demands[0] = demand;
             new_ride->demand_number = 1;
+
+            add_ride_stops(new_ride, demand);
+
+            if (i == demand_number - 1)
+                insert_new(&scheduler, &new_ride, speed);
 
             continue;
         }
@@ -71,74 +78,69 @@ int main()
 
         struct Demand main_demand = new_ride->demands[0];
 
-        if (new_ride->demand_number > 0)
+        bool should_stop = false;
+
+        if (!meets_distance_criteria)
         {
-            bool should_stop = false;
-            if (!meets_distance_criteria)
+            printf("\n%d => !meets_distance_criteria", i);
+            should_stop = true;
+        }
+        else if ((double)(demand.time - main_demand.time) > max_departure_interval)
+        {
+            printf("\n%d => (double)(demand.time - main_demand.time) > max_departure_interval", i);
+            // TODO: Essa linha deve ir pro final do loop (SERÁ?)
+            should_stop = true;
+        }
+        else
+        {
+            add_ride_stops(new_ride, demand);
+
+            new_ride->demands[new_ride->demand_number] = demand;
+            new_ride->demand_number++;
+
+            if (calculate_efficiency(*new_ride) < min_ride_efficiencty)
             {
-                // printf("\n%d => !meets_distance_criteria", i);
                 should_stop = true;
+                printf("\n%d -> Removendo demanda: %d", scheduler.size, demand.id);
+                remove_last_added_stops(new_ride);
+                new_ride->demand_number--;
             }
             else if (new_ride->demand_number == max_capacity)
             {
-                // printf("\n%d => new_ride->demand_number == max_capacity", i);
+                printf("\n%d => new_ride->demand_number == max_capacity", i);
                 should_stop = true;
             }
-            else if ((double)(demand.time - main_demand.time) > max_departure_interval)
-            {
-                // printf("\n%d => (double)(demand.time - main_demand.time) > max_departure_interval", i);
-                // TODO: Essa linha deve ir pro final do loop (SERÁ?)
-                should_stop = true;
-            }
-            else
-            {
-                add_ride_stops(new_ride, demand);
-                new_ride->demands[new_ride->demand_number] = demand;
-                new_ride->demand_number++;
+        }
 
-                if (calculate_efficiency(*new_ride) < min_ride_efficiencty)
-                {
-                    should_stop = true;
+        if (should_stop)
+        {
+            // TODO: Traduzir esse e todos os outros comentários para o português
+            // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
+            insert_new(&scheduler, &new_ride, speed);
+            i--;
 
-                    remove_last_added_stops(new_ride);
-                    new_ride->demand_number++;
-                }
-            }
-
-            if (should_stop)
-            {
-                // TODO: Traduzir esse e todos os outros comentários para o português
-                // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
-
-                insert_new(&scheduler, &new_ride, speed);
-
-                new_ride->demands[0] = demand;
-                new_ride->demand_number = 1;
-
-                continue;
-            }
+            continue;
         }
 
         new_ride->demands[new_ride->demand_number] = demand;
         new_ride->demand_number++;
     }
 
-    // Account for the last ride
-    insert_new(&scheduler, &new_ride, speed);
-    printf("\nTESTE NULO: %p", new_ride->stops);
-
     while (scheduler.size > 0)
     {
         struct Ride ride = get_next(&scheduler);
 
         double total_distance = get_ride_total_distance(ride);
+        if (total_distance == -1)
+            printf("\nERRO: Erro calculando distância total para impressao");
 
-        printf("\n%.2f %.2f %d", ride.end_time, total_distance, 2 * ride.demand_number);
+        printf("\n%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
 
         GeoPoint *stop = ride.stops;
         while (stop != NULL)
         {
             printf(" %.2f %.2f", stop->x, stop->y);
+            // printf(" (%p) %.2f %.2f", stop, stop->x, stop->y);
             stop = stop->next;
         }
     }

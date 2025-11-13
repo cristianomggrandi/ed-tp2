@@ -31,9 +31,7 @@ double calculate_efficiency(Ride ride)
 
     double total_distance = get_ride_total_distance(ride);
     if (total_distance == -1)
-    {
-        printf("\nERROR: Error calculating total distance for efficiency");
-    }
+        printf("\nERRO: Erro calculando distancia total para calcular eficiencia");
     // double origin_distance = get_distance(ride.demands[ride.demand_number - 1].origin, demand.origin);
     // double destination_distance = get_distance(ride.demands[ride.demand_number - 1].destination, demand.destination);
     // double new_distance = old_distance + origin_distance + destination_distance;
@@ -61,7 +59,10 @@ double get_ride_total_distance(Ride ride)
     GeoPoint *stop = ride.stops;
 
     if (stop == NULL || stop->next == NULL)
+    {
+        printf("\n%p", stop);
         return -1;
+    }
 
     double distance = 0;
 
@@ -100,8 +101,6 @@ void add_ride_stops(Ride *ride, Demand demand)
         return;
     }
 
-    // printf("\nSEG > 1"); //: %lf, %lf", stop->start.x, stop->start.y);
-
     GeoPoint *stop = ride->stops;
 
     // Posiciona stop no stopo que liga a coleta k ao destino 0
@@ -132,6 +131,7 @@ void add_ride_stops(Ride *ride, Demand demand)
     stop->next->next = NULL;
 
     ride->stop_number += 2;
+    // printf("\nTESTE 2: %d", ride->stop_number);
 }
 
 void remove_last_added_stops(Ride *ride)
@@ -145,16 +145,17 @@ void remove_last_added_stops(Ride *ride)
         free(ride->stops);
         ride->stops = NULL;
         ride->stop_number = 0;
+        ride->demand_number = 0;
         return;
     }
 
     GeoPoint *stop = ride->stops;
 
-    // Posiciona stop no ponto da coleta k
-    for (int i = 0; i < ride->stop_number / 2 - 1; i++)
+    // Posiciona stop no ponto da coleta (k - 1)
+    for (int i = 0; i < ride->stop_number / 2 - 2; i++)
         stop = stop->next;
 
-    // Remove a coleta e reconecta o anterior ao posterior
+    // Remove a coleta k e reconecta o anterior ao posterior
     GeoPoint *next_next_stop = stop->next->next;
     free(stop->next);
     stop->next = next_next_stop;
