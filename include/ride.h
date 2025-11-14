@@ -88,15 +88,6 @@ double get_ride_total_distance(Ride ride)
 
 void add_ride_stops(Ride *ride, Demand demand)
 {
-    // TODO: Mover funções de Ride para um arquivo isolado
-
-    {
-        GeoPoint *stop = ride->stops;
-
-        while (stop != NULL)
-            stop = stop->next;
-    }
-
     if (ride->stop_number == 0)
     {
         GeoPoint *stop = create_new_stop(demand.origin.x, demand.origin.y);
