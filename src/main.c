@@ -6,6 +6,7 @@
 #ifndef TYPES_H
 #include "types.h"
 #endif
+#include "ride.h"
 
 int main()
 {
@@ -47,10 +48,8 @@ int main()
 
         if (new_ride == NULL)
         {
-            new_ride = (Ride *)malloc(sizeof(Ride));
-            new_ride->demand_number = 0;
-            new_ride->stop_number = 0;
-            new_ride->stops = NULL;
+            new_ride = create_new_ride();
+
             new_ride->demands[0] = demand;
             new_ride->demand_number = 1;
 
@@ -97,7 +96,7 @@ int main()
             new_ride->demands[new_ride->demand_number] = demand;
             new_ride->demand_number++;
 
-            double efficiency = calculate_efficiency(*new_ride);
+            double efficiency = calculate_ride_efficiency(*new_ride);
             if (efficiency < 0)
                 printf("\nERRO: Quantidade de paradas invalida: %d", new_ride->stop_number);
             if (efficiency > 1)

@@ -5,6 +5,7 @@
 #ifndef TYPES_H
 #include "types.h"
 #endif
+#include "ride.h"
 
 void initialize(MinHeap *min_heap, int array_size);
 void insert_new(MinHeap *min_heap, Ride **ride, double speed);
