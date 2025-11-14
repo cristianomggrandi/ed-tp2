@@ -140,7 +140,7 @@ int main()
 
         printf("\n%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
 
-        GeoPoint *stop = ride.stops;
+        RideStop *stop = ride.stops;
         while (stop != NULL)
         {
             printf(" %.2f %.2f", stop->x, stop->y);
@@ -155,3 +155,5 @@ int main()
 
     return 0;
 }
+
+// TODO: Alterar minheap para usar eventos e não corridas

@@ -3,28 +3,23 @@
 
 #define MAX_CAPACITY 100
 
-typedef struct GeoPoint
-{
-    double x, y;
-    struct GeoPoint *next;
-} GeoPoint;
-
-typedef struct Demand
-{
-    int id;
-    int time;
-    GeoPoint origin;
-    GeoPoint destination;
-} Demand;
-
 typedef struct RideStop
 {
     // 1 - Coleta
     // 2 - Entrega
     int type;
-    GeoPoint coordinates;
-    int demand_id;
+    double x, y;
+    struct RideStop *next;
+    struct Ride *ride;
 } RideStop;
+
+typedef struct Demand
+{
+    int id;
+    int time;
+    RideStop origin;
+    RideStop destination;
+} Demand;
 
 typedef struct Segment
 {
@@ -32,8 +27,8 @@ typedef struct Segment
     // 2 - Entrega (2 pontos de desembarque)
     // 3 - Deslocamento (1 embarque e um desembarque)
     int type;
-    GeoPoint start;
-    GeoPoint end;
+    RideStop start;
+    RideStop end;
     // int duration;
     double distance;
     struct Segment *next;
@@ -44,7 +39,7 @@ typedef struct Ride
     int demand_number;
     Demand demands[MAX_CAPACITY];
     int stop_number;
-    GeoPoint *stops;
+    RideStop *stops;
     double end_time;
 } Ride;
 

@@ -12,7 +12,7 @@
 #endif
 
 Ride *create_new_ride();
-GeoPoint *create_new_stop(double x, double y);
+RideStop *create_new_stop(double x, double y, Ride *ride_p);
 double calculate_ride_efficiency(Ride ride);
 double get_sum_of_ride_demands_distances(Ride ride);
 double get_ride_total_distance(Ride ride);
@@ -29,12 +29,14 @@ Ride *create_new_ride()
     return ride;
 }
 
-GeoPoint *create_new_stop(double x, double y)
+RideStop *create_new_stop(double x, double y, Ride *ride_p)
 {
-    GeoPoint *stop = (GeoPoint *)malloc(sizeof(GeoPoint));
+    RideStop *stop = (RideStop *)malloc(sizeof(RideStop));
     stop->x = x;
     stop->y = y;
     stop->next = NULL;
+    stop->ride = ride_p;
+    stop->type = 0; // TODO
 
     return stop;
 }
@@ -70,7 +72,7 @@ double get_sum_of_ride_demands_distances(Ride ride)
 
 double get_ride_total_distance(Ride ride)
 {
-    GeoPoint *stop = ride.stops;
+    RideStop *stop = ride.stops;
 
     if (stop == NULL || stop->next == NULL)
         return -1;
@@ -90,8 +92,8 @@ void add_ride_stops(Ride *ride, Demand demand)
 {
     if (ride->stop_number == 0)
     {
-        GeoPoint *stop = create_new_stop(demand.origin.x, demand.origin.y);
-        stop->next = create_new_stop(demand.destination.x, demand.destination.y);
+        RideStop *stop = create_new_stop(demand.origin.x, demand.origin.y, ride);
+        stop->next = create_new_stop(demand.destination.x, demand.destination.y, ride);
 
         ride->stops = stop;
         ride->stop_number = 2;
@@ -99,7 +101,7 @@ void add_ride_stops(Ride *ride, Demand demand)
         return;
     }
 
-    GeoPoint *stop = ride->stops;
+    RideStop *stop = ride->stops;
 
     // Posiciona stop no stopo que liga a coleta k ao destino 0
     for (int i = 0; i < ride->stop_number / 2 - 1; i++)
@@ -108,7 +110,7 @@ void add_ride_stops(Ride *ride, Demand demand)
     }
 
     // Nova coleta
-    GeoPoint *new_stop = create_new_stop(demand.origin.x, demand.origin.y);
+    RideStop *new_stop = create_new_stop(demand.origin.x, demand.origin.y, ride);
     new_stop->next = stop->next;
 
     // Conecta a última coleta anterior à nova última coleta
@@ -121,7 +123,7 @@ void add_ride_stops(Ride *ride, Demand demand)
     }
 
     // Preenche novo stop ao final da lista
-    stop->next = create_new_stop(demand.destination.x, demand.destination.y);
+    stop->next = create_new_stop(demand.destination.x, demand.destination.y, ride);
 
     ride->stop_number += 2;
 }
@@ -141,14 +143,14 @@ void remove_last_added_stops(Ride *ride)
         return;
     }
 
-    GeoPoint *stop = ride->stops;
+    RideStop *stop = ride->stops;
 
     // Posiciona stop no ponto da coleta (k - 1)
     for (int i = 0; i < ride->stop_number / 2 - 2; i++)
         stop = stop->next;
 
     // Remove a coleta k e reconecta o anterior ao posterior
-    GeoPoint *next_next_stop = stop->next->next;
+    RideStop *next_next_stop = stop->next->next;
     free(stop->next);
     stop->next = next_next_stop;
 
