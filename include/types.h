@@ -1,7 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#define MAX_CAPACITY 10
+#define MAX_CAPACITY 100
 
 typedef struct GeoPoint
 {

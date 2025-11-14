@@ -27,7 +27,6 @@ void initialize(MinHeap *min_heap, int array_size)
 
 void insert_new(MinHeap *min_heap, Ride **ride_p, double speed)
 {
-    // printf("\n%d -> Primeira demanda: %d", min_heap->size, (*ride_p)->demands[0].id);
     Ride *ride = *ride_p;
 
     int index = min_heap->size;

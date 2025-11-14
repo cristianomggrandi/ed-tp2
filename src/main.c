@@ -82,18 +82,12 @@ int main()
 
         if (!meets_distance_criteria)
         {
-            printf("\n%d => !meets_distance_criteria", i);
+            // printf("\n%d => !meets_distance_criteria", i);
             should_stop = true;
         }
         else if ((double)(demand.time - main_demand.time) > max_departure_interval)
         {
-            printf("\n%d => (double)(demand.time - main_demand.time) > max_departure_interval", i);
-            // TODO: Essa linha deve ir pro final do loop (SERÁ?)
-            should_stop = true;
-        }
-        else if (new_ride->demand_number == max_capacity)
-        {
-            printf("\n%d => new_ride->demand_number == max_capacity", i);
+            // printf("\n%d => (double)(demand.time - main_demand.time) > max_departure_interval", i);
             should_stop = true;
         }
         else
@@ -112,14 +106,14 @@ int main()
             if (efficiency < min_ride_efficiency)
             {
                 should_stop = true;
-                printf("\n%d -> Removendo demanda: %d / %d", scheduler.size, demand.id, demand.time);
+                // printf("\n%d -> Removendo demanda: %d / %d", scheduler.size, demand.id, demand.time);
                 remove_last_added_stops(new_ride);
                 new_ride->demand_number--;
             }
-            else
+            else if (new_ride->demand_number == max_capacity)
             {
-                insert_new(&scheduler, &new_ride, speed);
-                continue;
+                // printf("\n%d => new_ride->demand_number == max_capacity", i);
+                should_stop = true;
             }
         }
 
@@ -151,7 +145,6 @@ int main()
         while (stop != NULL)
         {
             printf(" %.2f %.2f", stop->x, stop->y);
-            // printf(" (%p) %.2f %.2f", stop, stop->x, stop->y);
             stop = stop->next;
         }
     }

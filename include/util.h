@@ -32,16 +32,9 @@ double calculate_efficiency(Ride ride)
     if (total_distance == -1)
         printf("\nERRO: Erro calculando distancia total para calcular eficiencia");
 
-    // double original_distance = get_distance_without_last_demand(ride);
-
-    // double original_distance = get_distance(ride.demands[0].origin, ride.demands[0].destination);
     double original_distance = get_sum_of_ride_demands_distances(ride);
 
     double efficiency = original_distance / total_distance;
-    // double efficiency2 = total_distance / original_distance;
-
-    printf("\nEFF.: %lf / %lf = %lf", original_distance, total_distance, efficiency);
-    // printf("\nEFF 2.: %lf / %lf = %lf", total_distance, original_distance, efficiency2);
 
     return efficiency;
 }
@@ -49,9 +42,6 @@ double calculate_efficiency(Ride ride)
 double get_sum_of_ride_demands_distances(Ride ride)
 {
     double sum = 0;
-
-    // for (int i = 0; i < ride.demand_number; i++)
-    //     printf("\nPONTO: (%lf, %lf) => (%lf, %lf)", ride.demands[i].origin.x, ride.demands[i].origin.y, ride.demands[i].destination.x, ride.demands[i].destination.y);
 
     for (int i = 0; i < ride.demand_number; i++)
         sum += get_distance(ride.demands[i].origin, ride.demands[i].destination);
@@ -70,11 +60,7 @@ double get_ride_total_distance(Ride ride)
 
     while (stop->next != NULL)
     {
-        // printf("\nANTES: %lf", distance);
-        // printf("\nANTES get_distance: %p -> %p", stop, stop->next);
-        // printf("\nSUM: (%lf, %lf) e (%lf, %lf)", stop->x, stop->y, stop->next->x, stop->next->y);
         distance += get_distance(*stop, *(stop->next));
-        // printf("\nDEPOIS: %lf", distance);
         stop = stop->next;
     }
 
@@ -105,13 +91,9 @@ double get_distance_without_last_demand(Ride ride)
             i++;
         }
 
-        // printf("\nSUM 2: (%lf, %lf) e (%lf, %lf)", stop->x, stop->y, stop->next->x, stop->next->y);
         distance += get_distance(*stop, *next);
 
         stop = next;
-
-        // if (i == ride.stop_number / 2 - 2 || i == ride.stop_number - 1)
-        //     stop = stop->next;
 
         i++;
     }
@@ -126,13 +108,8 @@ void add_ride_stops(Ride *ride, Demand demand)
     {
         GeoPoint *stop = ride->stops;
 
-        printf("\nAdicionar ANTES:");
-
         while (stop != NULL)
-        {
-            printf("\n(%lf, %lf)", stop->x, stop->y);
             stop = stop->next;
-        }
     }
 
     if (ride->stop_number == 0)
@@ -142,10 +119,9 @@ void add_ride_stops(Ride *ride, Demand demand)
 
         stop->x = demand.origin.x;
         stop->y = demand.origin.y;
-        // printf("\nSTART: %lf, %lf", stop->x, stop->y);
+
         stop->next->x = demand.destination.x;
         stop->next->y = demand.destination.y;
-        // printf("\nEND: %lf, %lf", stop->next->x, stop->next->y);
 
         stop->next->next = NULL;
 
@@ -163,8 +139,6 @@ void add_ride_stops(Ride *ride, Demand demand)
         stop = stop->next;
     }
 
-    // printf("\nPOINTER 1: %p -> %p", stop, stop->next);
-
     // Nova coleta
     GeoPoint *new_stop = malloc(sizeof(GeoPoint));
     new_stop->next = stop->next;
@@ -174,35 +148,19 @@ void add_ride_stops(Ride *ride, Demand demand)
     // Conecta a última coleta anterior à nova última coleta
     stop->next = new_stop;
 
-    // printf("\nPOINTER 2: %p -> %p", stop, stop->next);
-
     // Posiciona stop no fim da lista
     while (stop->next != NULL)
     {
         stop = stop->next;
     }
 
-    // printf("\nPOINTER 3: %p -> %p", stop, stop->next);
     // Preenche novo stop ao final da lista
     stop->next = malloc(sizeof(GeoPoint));
     stop->next->x = demand.destination.x;
     stop->next->y = demand.destination.y;
     stop->next->next = NULL;
-    // printf("\nPOINTER 4: %p -> %p", stop, stop->next);
 
     ride->stop_number += 2;
-
-    {
-        GeoPoint *stop = ride->stops;
-
-        printf("\nAdicionar DEPOIS:");
-
-        while (stop != NULL)
-        {
-            printf("\n(%lf, %lf)", stop->x, stop->y);
-            stop = stop->next;
-        }
-    }
 }
 
 void remove_last_added_stops(Ride *ride)
@@ -212,8 +170,6 @@ void remove_last_added_stops(Ride *ride)
 
     if (ride->stop_number == 2)
     {
-        printf("\nstopnumber == 2 => %p -> %p", ride->stops, ride->stops->next);
-
         free(ride->stops->next);
         free(ride->stops);
         ride->stops = NULL;
@@ -237,39 +193,10 @@ void remove_last_added_stops(Ride *ride)
     while (stop->next->next != NULL)
         stop = stop->next;
 
-    // printf("\nPOINTER REMOCAO: %p -> %p -> %p", stop, stop->next, stop->next->next);
-
     // Remove último destino
     free(stop->next);
     stop->next = NULL;
 
     ride->stop_number -= 2;
 }
-
-// void get_ride_segments(Ride *ride)
-// {
-// TODO: Linked list
-// ride->segment_number = 2 * ride->demand_number - 1;
-
-// for (int i = 0; i < ride->demand_number - 1; i++)
-// {
-//     Segment collect_segment;
-//     collect_segment.start = ride->demands[i].origin;
-//     collect_segment.end = ride->demands[i + 1].origin;
-
-//     ride->segments[i] = collect_segment;
-
-//     Segment destination_segment;
-//     destination_segment.start = ride->demands[i].destination;
-//     destination_segment.end = ride->demands[i + 1].destination;
-
-//     ride->segments[i + ride->demand_number] = destination_segment;
-// }
-
-// Segment main_ride_segment;
-// main_ride_segment.start = ride->demands[ride->demand_number - 1].origin;
-// main_ride_segment.end = ride->demands[0].destination;
-
-// ride->segments[ride->demand_number - 1] = main_ride_segment;
-// }
 #endif
