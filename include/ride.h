@@ -12,11 +12,11 @@
 #endif
 
 Ride *create_new_ride();
-RideStop *create_new_stop(double x, double y, Ride *ride_p, RideStop *prev);
+RideStop *create_new_stop(double x, double y, Ride *ride_p, RideStop *prev, double speed);
 double calculate_ride_efficiency(Ride ride);
 double get_sum_of_ride_demands_distances(Ride ride);
 double get_ride_total_distance(Ride ride);
-void add_ride_stops(Ride *ride, Demand demand);
+void add_ride_stops(Ride *ride, Demand demand, double speed);
 void remove_last_added_stops(Ride *ride);
 double calculate_stop_time(RideStop *stop, double speed);
 
@@ -30,19 +30,42 @@ Ride *create_new_ride()
     return ride;
 }
 
-RideStop *create_new_stop(double x, double y, Ride *ride_p, RideStop *prev)
+RideStop *create_new_stop(double x, double y, Ride *ride, RideStop *prev, double speed)
 {
-    RideStop *stop = (RideStop *)malloc(sizeof(RideStop));
-    stop->x = x;
-    stop->y = y;
-    stop->prev = prev;
-    stop->next = NULL;
-    stop->ride = ride_p;
-    stop->type = 0; // TODO
+    RideStop *new_stop = (RideStop *)malloc(sizeof(RideStop));
+    new_stop->x = x;
+    new_stop->y = y;
+    new_stop->prev = prev;
+    new_stop->next = NULL;
+    new_stop->ride = ride;
+    new_stop->type = 0; // TODO
 
-    stop->time = 0; // TODO: Testar
+    double distance = 0;
+    RideStop *stop = ride->stops;
+    if (stop != NULL)
+    {
+        while (stop->next != NULL)
+        {
+            distance += get_distance(*stop, *(stop->next));
+            // printf("\nDISTANCE: %p -> %lf", stop, distance);
+            stop = stop->next;
+        }
 
-    return stop;
+        distance += get_distance(*stop, *new_stop);
+        // printf("\nDISTANCE: %p -> %lf", stop, distance);
+
+        new_stop->distance = distance;                             // TODO: Testar
+        new_stop->time = ride->demands[0].time + distance / speed; // TODO: Testar
+    }
+    else
+    {
+        new_stop->distance = 0;
+        new_stop->time = ride->demands[0].time;
+    }
+
+    // printf("\nCREATE: %p -> %lf e %lf", new_stop, new_stop->distance, new_stop->time);
+
+    return new_stop;
 }
 
 double calculate_ride_efficiency(Ride ride)
@@ -92,12 +115,12 @@ double get_ride_total_distance(Ride ride)
     return distance;
 }
 
-void add_ride_stops(Ride *ride, Demand demand)
+void add_ride_stops(Ride *ride, Demand demand, double speed)
 {
     if (ride->stop_number == 0)
     {
-        RideStop *stop = create_new_stop(demand.origin.x, demand.origin.y, ride, NULL);
-        stop->next = create_new_stop(demand.destination.x, demand.destination.y, ride, stop);
+        RideStop *stop = create_new_stop(demand.origin.x, demand.origin.y, ride, NULL, speed);
+        stop->next = create_new_stop(demand.destination.x, demand.destination.y, ride, stop, speed);
 
         ride->stops = stop;
         ride->stop_number = 2;
@@ -114,7 +137,7 @@ void add_ride_stops(Ride *ride, Demand demand)
     }
 
     // Nova coleta
-    RideStop *new_stop = create_new_stop(demand.origin.x, demand.origin.y, ride, stop);
+    RideStop *new_stop = create_new_stop(demand.origin.x, demand.origin.y, ride, stop, speed);
     new_stop->next = stop->next;
 
     // Conecta a última coleta anterior à nova última coleta
@@ -127,7 +150,7 @@ void add_ride_stops(Ride *ride, Demand demand)
     }
 
     // Preenche novo stop ao final da lista
-    stop->next = create_new_stop(demand.destination.x, demand.destination.y, ride, stop);
+    stop->next = create_new_stop(demand.destination.x, demand.destination.y, ride, stop, speed);
 
     ride->stop_number += 2;
 }
@@ -171,9 +194,6 @@ void remove_last_added_stops(Ride *ride)
 
 double calculate_stop_time(RideStop *stop, double speed)
 {
-    // printf("\nTESTE 1.44");
-    printf("\nCURR_STOP: %p, %p", stop, stop->ride);
-
     if (stop->ride->stops == NULL)
         return -1;
 

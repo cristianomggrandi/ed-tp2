@@ -10,6 +10,7 @@ typedef struct RideStop
     int type;
     double x, y;
     double time;
+    double distance;
     struct RideStop *next;
     struct RideStop *prev;
     struct Ride *ride;

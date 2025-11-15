@@ -44,6 +44,8 @@ int main()
 
     for (int i = 0; i < demand_number; i++)
     {
+        // printf("\nNEWRIDE: %p", new_ride);
+
         demand = demands[i];
 
         if (new_ride == NULL)
@@ -53,10 +55,13 @@ int main()
             new_ride->demands[0] = demand;
             new_ride->demand_number = 1;
 
-            add_ride_stops(new_ride, demand);
+            add_ride_stops(new_ride, demand, speed);
 
             if (i == demand_number - 1)
-                insert_new(&scheduler, &new_ride->stops, speed);
+            {
+                insert_new(&scheduler, new_ride->stops, speed);
+                new_ride = NULL;
+            }
 
             continue;
         }
@@ -91,7 +96,7 @@ int main()
         }
         else
         {
-            add_ride_stops(new_ride, demand);
+            add_ride_stops(new_ride, demand, speed);
 
             new_ride->demands[new_ride->demand_number] = demand;
             new_ride->demand_number++;
@@ -120,7 +125,8 @@ int main()
         {
             // TODO: Traduzir esse e todos os outros comentários para o português
             // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
-            insert_new(&scheduler, &new_ride->stops, speed);
+            insert_new(&scheduler, new_ride->stops, speed);
+            new_ride = NULL;
 
             // TODO: Era isso aqui o tempo todo?
             // TODO: Conferir se precisa
@@ -133,31 +139,47 @@ int main()
         new_ride->demand_number++;
     }
 
+    // for (int i = 0; i < scheduler.size; i++)
+    // {
+    //     printf("\nSCHED.: %lf, %lf", scheduler.stops[i].x, scheduler.stops[i].y);
+
+    //     struct RideStop *stop = scheduler.stops;
+
+    //     if (stop->next != NULL)
+    //     {
+    //         printf("\nSCHED DPS: %lf, %lf", stop->x, stop->y);
+    //     }
+    // }
+
+    struct RideStop *stop = malloc(sizeof(RideStop));
+
     while (scheduler.size > 0)
     {
-        struct RideStop stop = get_next(&scheduler);
-        printf("\nTESTE: %p -> %p", &stop, stop.next);
+        get_next(&scheduler, stop);
+        // printf("\nTESTE: %p -> %p / (%lf, %lf)", stop, stop->next, stop->x, stop->y);
 
-        // if (stop.next != NULL)
-        // {
-        //     printf("\nPRE INSERT 1: %p -> %p", &stop, stop.next);
+        if (stop->next != NULL)
+        {
+            // printf("\nPRE INSERT 1: %p -> %p", stop, stop->next);
 
-        //     insert_new(&scheduler, &stop.next, speed);
-        //     continue;
-        // }
+            insert_new(&scheduler, stop->next, speed);
+            continue;
+        }
 
-        double total_distance = get_ride_total_distance(*stop.ride);
+        double total_distance = get_ride_total_distance(*stop->ride);
         if (total_distance == -1)
             printf("\nERRO: Erro calculando distância total para impressao");
 
-        // printf("\n%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
+        Ride ride = *stop->ride;
 
-        // RideStop *stop = ride.stops;
-        // while (stop != NULL)
-        // {
-        //     printf(" %.2f %.2f", stop->x, stop->y);
-        //     stop = stop->next;
-        // }
+        printf("\n%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
+
+        RideStop *ride_stop = ride.stops;
+        while (ride_stop != NULL)
+        {
+            printf(" %.2f %.2f", ride_stop->x, ride_stop->y);
+            ride_stop = ride_stop->next;
+        }
 
         // TODO: Free each stop
     }

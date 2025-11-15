@@ -8,8 +8,8 @@
 #include "ride.h"
 
 void initialize(MinHeap *min_heap, int size);
-void insert_new(MinHeap *min_heap, RideStop **stop_p, double speed);
-RideStop get_next(MinHeap *min_heap); // TODO: Pointer?
+void insert_new(MinHeap *min_heap, RideStop *stop, double speed);
+void get_next(MinHeap *min_heap, RideStop *stop); // TODO: Pointer?
 RideStop peek(MinHeap *min_heap);
 int get_parent_index(int index);     // TODO: Pointer?
 int get_left_node_index(int index);  // TODO: Pointer?
@@ -27,9 +27,9 @@ void initialize(MinHeap *min_heap, int size)
     min_heap->size = 0;
 }
 
-void insert_new(MinHeap *min_heap, RideStop **stop_p, double speed)
+void insert_new(MinHeap *min_heap, RideStop *stop, double speed)
 {
-    RideStop *stop = *stop_p;
+    // printf("\nINSERT: %p -> %lf e %lf", stop, stop->distance, stop->distance);
 
     int index = min_heap->size;
     int parent_index = get_parent_index(index);
@@ -54,12 +54,26 @@ void insert_new(MinHeap *min_heap, RideStop **stop_p, double speed)
 
     min_heap->size++;
 
+    // TODO: Precisa?
     // *stop_p = NULL;
 }
 
-RideStop get_next(MinHeap *min_heap)
+void get_next(MinHeap *min_heap, RideStop *stop)
 {
+    if (min_heap->size == 0)
+    {
+        printf("\nERRO: MinHeap vazio");
+        return;
+    }
+
+    if (stop == NULL)
+    {
+        printf("\nERRO: ponteiro para parada NULL");
+        return;
+    }
+
     RideStop next = min_heap->stops[0];
+    // printf("\nTIME: %p -> %lf", &next, next.time);
 
     min_heap->stops[0] = min_heap->stops[min_heap->size - 1];
     min_heap->size--;
@@ -98,7 +112,8 @@ RideStop get_next(MinHeap *min_heap)
         right_node_index = get_right_node_index(index);
     }
 
-    return next;
+    *stop = next;
+    // printf("\nTIME2: %p -> %lf", stop, stop->time);
 }
 
 RideStop peek(MinHeap *min_heap)
