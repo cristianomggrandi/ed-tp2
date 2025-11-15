@@ -56,7 +56,7 @@ int main()
             add_ride_stops(new_ride, demand);
 
             if (i == demand_number - 1)
-                insert_new(&scheduler, &new_ride, speed);
+                insert_new(&scheduler, &new_ride->stops, speed);
 
             continue;
         }
@@ -120,8 +120,11 @@ int main()
         {
             // TODO: Traduzir esse e todos os outros comentários para o português
             // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
-            insert_new(&scheduler, &new_ride, speed);
-            i--;
+            insert_new(&scheduler, &new_ride->stops, speed);
+
+            // TODO: Era isso aqui o tempo todo?
+            // TODO: Conferir se precisa
+            // i--;
 
             continue;
         }
@@ -132,26 +135,37 @@ int main()
 
     while (scheduler.size > 0)
     {
-        struct Ride ride = get_next(&scheduler);
+        struct RideStop stop = get_next(&scheduler);
+        printf("\nTESTE: %p -> %p", &stop, stop.next);
 
-        double total_distance = get_ride_total_distance(ride);
+        // if (stop.next != NULL)
+        // {
+        //     printf("\nPRE INSERT 1: %p -> %p", &stop, stop.next);
+
+        //     insert_new(&scheduler, &stop.next, speed);
+        //     continue;
+        // }
+
+        double total_distance = get_ride_total_distance(*stop.ride);
         if (total_distance == -1)
             printf("\nERRO: Erro calculando distância total para impressao");
 
-        printf("\n%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
+        // printf("\n%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
 
-        RideStop *stop = ride.stops;
-        while (stop != NULL)
-        {
-            printf(" %.2f %.2f", stop->x, stop->y);
-            stop = stop->next;
-        }
+        // RideStop *stop = ride.stops;
+        // while (stop != NULL)
+        // {
+        //     printf(" %.2f %.2f", stop->x, stop->y);
+        //     stop = stop->next;
+        // }
+
+        // TODO: Free each stop
     }
 
     printf("\n");
 
     free(new_ride);
-    free(scheduler.rides);
+    free(scheduler.stops);
 
     return 0;
 }

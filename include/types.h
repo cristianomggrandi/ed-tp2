@@ -9,7 +9,9 @@ typedef struct RideStop
     // 2 - Entrega
     int type;
     double x, y;
+    double time;
     struct RideStop *next;
+    struct RideStop *prev;
     struct Ride *ride;
 } RideStop;
 
@@ -46,6 +48,6 @@ typedef struct Ride
 typedef struct MinHeap
 {
     int size;
-    Ride *rides;
+    RideStop *stops;
 } MinHeap;
 #endif
