@@ -86,16 +86,24 @@ int main()
         struct Demand main_demand = new_ride->demands[0];
 
         bool should_stop = false;
+        bool should_create_new_ride = false;
 
-        if (!meets_distance_criteria)
+        if (i == demand_number - 1)
+        {
+            should_stop = true;
+            should_create_new_ride = true;
+        }
+        else if (!meets_distance_criteria)
         {
             // printf("\n%d => !meets_distance_criteria", i);
             should_stop = true;
+            should_create_new_ride = true;
         }
         else if ((double)(demand.time - main_demand.time) > max_departure_interval)
         {
             // printf("\n%d => (double)(demand.time - main_demand.time) > max_departure_interval", i);
             should_stop = true;
+            should_create_new_ride = true;
         }
         else
         {
@@ -114,10 +122,14 @@ int main()
             if (efficiency < min_ride_efficiency)
             {
                 should_stop = true;
+                should_create_new_ride = true;
+
                 // printf("\n%d -> Removendo demanda: %d / %d", scheduler.size, demand.id, demand.time);
+
                 remove_last_added_stops(new_ride);
                 remove_last_added_demand(new_ride);
-                i--;
+
+                should_create_new_ride = true;
             }
             else if (new_ride->demand_number == max_capacity)
             {
@@ -130,9 +142,22 @@ int main()
         {
             // TODO: Traduzir esse e todos os outros comentários para o português
             // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
-            // printf("\nINSERT FORA 2: %p -> %lf => %lf e %lf", new_ride->stops, new_ride->stops->time, new_ride->stops->distance, new_ride->stops->distance);
+            // ("\nINSERT FORA 2: %p -> %lf => %lf e %lf", new_ride->stops, new_ride->stops->time, new_ride->stops->distance, new_ride->stops->distance);
+            // printf("\nINSERT FORA 2 2: %d, %d", demand.time, demand.id);
             insert_new(&scheduler, new_ride->stops, speed);
+
             new_ride = NULL;
+
+            if (should_create_new_ride)
+            {
+                new_ride = create_new_ride();
+
+                add_ride_demand(new_ride, demand);
+                add_ride_stops(new_ride, demand, speed);
+
+                if (i == demand_number - 1)
+                    insert_new(&scheduler, new_ride->stops, speed);
+            }
 
             // TODO: Era isso aqui o tempo todo?
             // TODO: Conferir se precisa
@@ -146,13 +171,19 @@ int main()
 
     // for (int i = 0; i < scheduler.size; i++)
     // {
-    //     printf("\nSCHED.: %lf, %lf", scheduler.stops[i].x, scheduler.stops[i].y);
+    //     // printf("\nSCHED.: %lf, %lf", scheduler.stops[i].x, scheduler.stops[i].y);
+    //     printf("\nSCHED.: ");
 
     //     struct RideStop *stop = scheduler.stops;
 
-    //     if (stop->next != NULL)
+    //     // if (stop->next != NULL)
+    //     // {
+    //     //     printf("\nSCHED DPS: %lf, %lf", stop->x, stop->y);
+    //     // }
+    //     while (stop != NULL)
     //     {
-    //         printf("\nSCHED DPS: %lf, %lf", stop->x, stop->y);
+    //         printf(" (%lf, %lf) %p", stop->x, stop->y, stop->next);
+    //         stop = stop->next;
     //     }
     // }
 
