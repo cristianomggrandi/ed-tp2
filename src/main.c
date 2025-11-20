@@ -47,20 +47,23 @@ int main()
         // printf("\nNEWRIDE: %p", new_ride);
 
         demand = demands[i];
+        // printf("\nDEMAND %d: %p => %d", i, new_ride, demand.time);
 
         if (new_ride == NULL)
         {
             new_ride = create_new_ride();
 
-            new_ride->demands[0] = demand;
-            new_ride->demand_number = 1;
-
+            // new_ride->demands[0] = demand;
+            // new_ride->demand_number = 1;
+            add_ride_demand(new_ride, demand);
             add_ride_stops(new_ride, demand, speed);
 
             if (i == demand_number - 1)
             {
+                // printf("\nINSERT FORA 1: %p -> %lf => %lf e %lf", new_ride->stops, new_ride->stops->time, new_ride->stops->distance, new_ride->stops->distance);
                 insert_new(&scheduler, new_ride->stops, speed);
                 new_ride = NULL;
+                break;
             }
 
             continue;
@@ -96,10 +99,11 @@ int main()
         }
         else
         {
+            add_ride_demand(new_ride, demand);
             add_ride_stops(new_ride, demand, speed);
 
-            new_ride->demands[new_ride->demand_number] = demand;
-            new_ride->demand_number++;
+            // new_ride->demands[new_ride->demand_number] = demand;
+            // new_ride->demand_number++;
 
             double efficiency = calculate_ride_efficiency(*new_ride);
             if (efficiency < 0)
@@ -112,7 +116,8 @@ int main()
                 should_stop = true;
                 // printf("\n%d -> Removendo demanda: %d / %d", scheduler.size, demand.id, demand.time);
                 remove_last_added_stops(new_ride);
-                new_ride->demand_number--;
+                remove_last_added_demand(new_ride);
+                i--;
             }
             else if (new_ride->demand_number == max_capacity)
             {
@@ -125,6 +130,7 @@ int main()
         {
             // TODO: Traduzir esse e todos os outros comentários para o português
             // Doesn't respect the maximum distance criteria or the restriction for maximum interval betweend ride demands, so we finish this ride and create a new one
+            // printf("\nINSERT FORA 2: %p -> %lf => %lf e %lf", new_ride->stops, new_ride->stops->time, new_ride->stops->distance, new_ride->stops->distance);
             insert_new(&scheduler, new_ride->stops, speed);
             new_ride = NULL;
 
@@ -135,8 +141,7 @@ int main()
             continue;
         }
 
-        new_ride->demands[new_ride->demand_number] = demand;
-        new_ride->demand_number++;
+        // add_ride_demand(new_ride, demand);
     }
 
     // for (int i = 0; i < scheduler.size; i++)
@@ -157,6 +162,9 @@ int main()
     {
         get_next(&scheduler, stop);
         // printf("\nTESTE: %p -> %p / (%lf, %lf)", stop, stop->next, stop->x, stop->y);
+        // printf("\nSIZE: %d", scheduler.size);
+        // printf("\nTIME: %lf", stop->time);
+        // printf("\nTESTE: %p -> %p / (%lf, %lf)", stop, stop->next, stop->x, stop->y);
 
         if (stop->next != NULL)
         {
@@ -170,8 +178,11 @@ int main()
         if (total_distance == -1)
             printf("\nERRO: Erro calculando distância total para impressao");
 
+        // double total_distance = calculate_ride_total_time(*stop->ride);
+
         Ride ride = *stop->ride;
 
+        // TODO: Não está imprimindo todas as paradas, só algumas
         printf("\n%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
 
         RideStop *ride_stop = ride.stops;

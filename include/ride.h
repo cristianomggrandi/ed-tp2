@@ -16,6 +16,8 @@ RideStop *create_new_stop(double x, double y, Ride *ride_p, RideStop *prev, doub
 double calculate_ride_efficiency(Ride ride);
 double get_sum_of_ride_demands_distances(Ride ride);
 double get_ride_total_distance(Ride ride);
+void add_ride_demand(Ride *ride, Demand demand);
+void remove_last_added_demand(Ride *ride);
 void add_ride_stops(Ride *ride, Demand demand, double speed);
 void remove_last_added_stops(Ride *ride);
 double calculate_stop_time(RideStop *stop, double speed);
@@ -115,6 +117,17 @@ double get_ride_total_distance(Ride ride)
     return distance;
 }
 
+void add_ride_demand(Ride *ride, Demand demand)
+{
+    ride->demands[ride->demand_number] = demand;
+    ride->demand_number++;
+}
+
+void remove_last_added_demand(Ride *ride)
+{
+    ride->demand_number--;
+}
+
 void add_ride_stops(Ride *ride, Demand demand, double speed)
 {
     if (ride->stop_number == 0)
@@ -199,6 +212,7 @@ double calculate_stop_time(RideStop *stop, double speed)
 
     RideStop *curr_stop = stop->ride->stops;
 
+    double ride_start_time = (double)curr_stop->ride->demands->time;
     double distance = 0;
 
     while (curr_stop != stop)
@@ -210,6 +224,11 @@ double calculate_stop_time(RideStop *stop, double speed)
         curr_stop = curr_stop->next;
     }
 
-    return distance / speed;
+    double time = ride_start_time + (distance / speed);
+
+    curr_stop->ride->end_time = time;
+    // printf("\nTIME: %lf", time);
+
+    return time;
 }
 #endif

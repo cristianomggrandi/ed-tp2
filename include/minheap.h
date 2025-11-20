@@ -14,25 +14,27 @@ RideStop peek(MinHeap *min_heap);
 int get_parent_index(int index);     // TODO: Pointer?
 int get_left_node_index(int index);  // TODO: Pointer?
 int get_right_node_index(int index); // TODO: Pointer?
+int is_valid_minheap(MinHeap *min_heap);
+
+void print_all(MinHeap *min_heap)
+{
+    printf("\nPRINT HEAP %d:", min_heap->size);
+
+    for (int i = 0; i < min_heap->size; i++)
+        printf(" %lf", min_heap->stops[i].time);
+}
 
 void initialize(MinHeap *min_heap, int size)
 {
     min_heap->stops = (RideStop *)malloc(size * sizeof(RideStop));
-
-    // Initialize every ride's ride counter to 0
-    // TODO: ?
-    // for (int i = 0; i < size; i++)
-    //     min_heap->stops[i].demand_number = 0;
-
     min_heap->size = 0;
 }
 
 void insert_new(MinHeap *min_heap, RideStop *stop, double speed)
 {
-    // printf("\nINSERT: %p -> %lf e %lf", stop, stop->distance, stop->distance);
+    // printf("\nINSERT: %p -> %lf => %lf e %lf", stop, stop->time, stop->distance, stop->distance);
 
     int index = min_heap->size;
-    int parent_index = get_parent_index(index);
 
     // double total_distance = get_ride_total_distance(**stop_p);
     // stop->time = ((double)stop->demands[0].time) + (total_distance / speed);
@@ -41,21 +43,25 @@ void insert_new(MinHeap *min_heap, RideStop *stop, double speed)
         printf("\nERRO: Erro calculando tempo de parada");
 
     min_heap->stops[index] = *stop;
+    min_heap->size++;
 
-    while (min_heap->stops[parent_index].time > min_heap->stops[index].time)
+    while (index > 0)
     {
+        int parent_index = get_parent_index(index);
+        if (min_heap->stops[parent_index].time <= min_heap->stops[index].time)
+            break;
+
         RideStop temp = min_heap->stops[parent_index];
         min_heap->stops[parent_index] = min_heap->stops[index];
         min_heap->stops[index] = temp;
 
         index = parent_index;
-        parent_index = get_parent_index(index);
     }
-
-    min_heap->size++;
 
     // TODO: Precisa?
     // *stop_p = NULL;
+
+    // print_all(min_heap);
 }
 
 void get_next(MinHeap *min_heap, RideStop *stop)
@@ -113,7 +119,6 @@ void get_next(MinHeap *min_heap, RideStop *stop)
     }
 
     *stop = next;
-    // printf("\nTIME2: %p -> %lf", stop, stop->time);
 }
 
 RideStop peek(MinHeap *min_heap)
@@ -123,7 +128,7 @@ RideStop peek(MinHeap *min_heap)
 
 int get_parent_index(int index)
 {
-    return index / 2;
+    return (index - 1) / 2;
 }
 int get_left_node_index(int index)
 {
@@ -132,4 +137,32 @@ int get_left_node_index(int index)
 int get_right_node_index(int index)
 {
     return index * 2 + 2;
+}
+
+int is_valid_minheap(MinHeap *min_heap)
+{
+    if (min_heap == NULL || min_heap->size == 0)
+        return 1;
+
+    for (int i = 0; i < min_heap->size; i++)
+    {
+        int left = get_left_node_index(i);
+        int right = get_right_node_index(i);
+
+        if (left < min_heap->size && min_heap->stops[i].time > min_heap->stops[left].time)
+        {
+            printf("\nERRO HEAP: Pai[%d]=%.2lf > Filho Esquerdo[%d]=%.2lf",
+                   i, min_heap->stops[i].time, left, min_heap->stops[left].time);
+            return 0;
+        }
+
+        if (right < min_heap->size && min_heap->stops[i].time > min_heap->stops[right].time)
+        {
+            printf("\nERRO HEAP: Pai[%d]=%.2lf > Filho Direito[%d]=%.2lf",
+                   i, min_heap->stops[i].time, right, min_heap->stops[right].time);
+            return 0;
+        }
+    }
+
+    return 1;
 }
