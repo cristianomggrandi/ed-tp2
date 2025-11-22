@@ -21,11 +21,11 @@ int main()
     scanf("%lf", &min_ride_efficiency);
     scanf("%d", &demand_number);
 
-    struct Demand demands[demand_number];
-    struct Demand demand;
-
     struct MinHeap scheduler;
     initialize(&scheduler, demand_number);
+
+    struct Demand demand;
+    struct Ride *new_ride = NULL;
 
     for (int i = 0; i < demand_number; i++)
     {
@@ -36,15 +36,7 @@ int main()
               &demand.origin.y,
               &demand.destination.x,
               &demand.destination.y);
-
-        demands[i] = demand;
-    }
-
-    struct Ride *new_ride = NULL;
-
-    for (int i = 0; i < demand_number; i++)
-    {
-        demand = demands[i];
+        // demand = demands[i];
 
         if (new_ride == NULL)
         {
