@@ -56,8 +56,8 @@ RideStop *create_new_stop(double x, double y, Ride *ride, RideStop *prev, double
         distance += get_distance(*stop, *new_stop);
         // printf("\nDISTANCE: %p -> %lf", stop, distance);
 
-        new_stop->distance = distance;                             // TODO: Testar
-        new_stop->time = ride->demands[0].time + distance / speed; // TODO: Testar
+        new_stop->distance = distance;
+        new_stop->time = ride->demands[0].time + distance / speed;
     }
     else
     {
