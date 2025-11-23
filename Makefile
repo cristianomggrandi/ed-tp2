@@ -9,6 +9,7 @@ TARGET_WIN = tp2.exe
 SRC_DIR = src
 INC_DIR = include
 BIN_DIR = bin
+OBJ_DIR = obj
 
 # Source files
 SOURCES = $(SRC_DIR)/main.c
@@ -22,9 +23,12 @@ OBJECTS = $(SOURCES:.c=.o)
 # Default target
 all: $(BIN_DIR) $(TARGET)
 
-# Create bin directory if it doesn't exist
+# Cria diretórios se não existirem
 $(BIN_DIR):
-	mkdir $(BIN_DIR)
+	mkdir -p $(BIN_DIR)
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 # Link object files to create executable
 $(TARGET): $(OBJECTS)

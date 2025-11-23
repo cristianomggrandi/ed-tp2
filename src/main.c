@@ -36,7 +36,6 @@ int main()
               &demand.origin.y,
               &demand.destination.x,
               &demand.destination.y);
-        // demand = demands[i];
 
         if (new_ride == NULL)
         {
