@@ -9,13 +9,13 @@
 
 void initialize(MinHeap *min_heap, int size);
 void insert_new(MinHeap *min_heap, RideStop *stop, double speed);
-void get_next(MinHeap *min_heap, RideStop *stop);
+RideStop get_next(MinHeap *min_heap);
 RideStop peek(MinHeap *min_heap);
 int get_parent_index(int index);
 int get_left_node_index(int index);
 int get_right_node_index(int index);
 int is_valid_minheap(MinHeap *min_heap);
-void finalize(MinHeap *min_heap);
+void finalize(MinHeap *min_heap, double speed);
 
 void print_all(MinHeap *min_heap)
 {
@@ -56,13 +56,10 @@ void insert_new(MinHeap *min_heap, RideStop *stop, double speed)
     }
 }
 
-void get_next(MinHeap *min_heap, RideStop *stop)
+RideStop get_next(MinHeap *min_heap)
 {
     if (min_heap->size == 0)
-    {
         printf("\nERRO: MinHeap vazio");
-        return;
-    }
 
     RideStop next = min_heap->stops[0];
 
@@ -103,7 +100,7 @@ void get_next(MinHeap *min_heap, RideStop *stop)
         right_node_index = get_right_node_index(index);
     }
 
-    *stop = next;
+    return next;
 }
 
 RideStop peek(MinHeap *min_heap)
@@ -152,7 +149,43 @@ int is_valid_minheap(MinHeap *min_heap)
     return 1;
 }
 
-void finalize(MinHeap *min_heap)
+void finalize(MinHeap *min_heap, double speed)
 {
+    struct RideStop stop;
+
+    while (min_heap->size > 0)
+    {
+        stop = get_next(min_heap);
+
+        if (stop.next != NULL)
+        {
+            insert_new(min_heap, stop.next, speed);
+            continue;
+        }
+
+        double total_distance = get_ride_total_distance(*stop.ride);
+
+        Ride ride = *stop.ride;
+
+        printf("%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
+
+        RideStop *ride_stop = ride.stops;
+        while (ride_stop != NULL)
+        {
+            printf(" %.2f %.2f", ride_stop->x, ride_stop->y);
+
+            RideStop *current = ride_stop;
+            ride_stop = ride_stop->next;
+            free(current);
+        }
+
+        for (int i = 0; i < ride.demand_number; i++)
+            ride.demands[i].type = FINISHED;
+
+        printf("\n");
+
+        free(stop.ride);
+    }
+
     free(min_heap->stops);
 }

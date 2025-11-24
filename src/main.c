@@ -121,45 +121,8 @@ int main()
         }
     }
 
-    struct RideStop *stop = malloc(sizeof(RideStop));
+    finalize(&scheduler, speed);
 
-    while (scheduler.size > 0)
-    {
-        get_next(&scheduler, stop);
-
-        if (stop->next != NULL)
-        {
-            insert_new(&scheduler, stop->next, speed);
-            continue;
-        }
-
-        double total_distance = get_ride_total_distance(*stop->ride);
-
-        Ride ride = *stop->ride;
-
-        printf("%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
-
-        RideStop *ride_stop = ride.stops;
-        while (ride_stop != NULL)
-        {
-            printf(" %.2f %.2f", ride_stop->x, ride_stop->y);
-
-            RideStop *current = ride_stop;
-            ride_stop = ride_stop->next;
-            free(current);
-        }
-
-        for (int i = 0; i < ride.demand_number; i++)
-            ride.demands[i].type = FINISHED;
-
-        printf("\n");
-
-        free(stop->ride);
-    }
-
-    finalize(&scheduler);
-
-    free(stop);
     free(new_ride);
 
     return 0;
