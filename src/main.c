@@ -24,30 +24,33 @@ int main()
     struct MinHeap scheduler;
     initialize(&scheduler, demand_number);
 
-    struct Demand demand;
+    struct Demand *demand;
+
     struct Ride *new_ride = NULL;
 
     for (int i = 0; i < demand_number; i++)
     {
+        demand = malloc(sizeof(Ride));
+        demand->type = DEMANDED;
+
         scanf("%d %d %lf %lf %lf %lf",
-              &demand.id,
-              &demand.time,
-              &demand.origin.x,
-              &demand.origin.y,
-              &demand.destination.x,
-              &demand.destination.y);
+              &demand->id,
+              &demand->time,
+              &demand->origin.x,
+              &demand->origin.y,
+              &demand->destination.x,
+              &demand->destination.y);
 
         if (new_ride == NULL)
         {
             new_ride = create_new_ride();
 
-            add_ride_demand(new_ride, demand);
+            add_ride_demand(new_ride, *demand);
             add_ride_stops(new_ride, demand, speed);
 
             if (i == demand_number - 1)
             {
                 insert_new(&scheduler, new_ride->stops, speed);
-                // free(new_ride);
                 new_ride = NULL;
                 break;
             }
@@ -55,42 +58,27 @@ int main()
             continue;
         }
 
-        int meets_distance_criteria = 1;
-
-        for (int j = 0; j < new_ride->demand_number; j++)
-        {
-            if (
-                (get_distance(demand.origin, new_ride->demands[j].origin) > max_origin_distance) ||
-                (get_distance(demand.destination, new_ride->demands[j].destination) > max_destination_distance))
-            {
-                meets_distance_criteria = 0;
-                break;
-            }
-        }
-
         struct Demand main_demand = new_ride->demands[0];
 
         bool should_stop = false;
         bool should_create_new_ride = false;
 
-        if (!meets_distance_criteria)
+        if (!meets_distance_criteria(new_ride, *demand, max_origin_distance, max_destination_distance))
         {
             should_stop = true;
             should_create_new_ride = true;
         }
-        else if ((double)(demand.time - main_demand.time) > max_departure_interval)
+        else if ((double)((*demand).time - main_demand.time) > max_departure_interval)
         {
             should_stop = true;
             should_create_new_ride = true;
         }
         else
         {
-            add_ride_demand(new_ride, demand);
+            add_ride_demand(new_ride, *demand);
             add_ride_stops(new_ride, demand, speed);
 
             double efficiency = calculate_ride_efficiency(*new_ride);
-            if (efficiency < 0)
-                printf("\nERRO: Quantidade de paradas invalida: %d", new_ride->stop_number);
 
             if (efficiency < min_ride_efficiency)
             {
@@ -119,7 +107,7 @@ int main()
             {
                 new_ride = create_new_ride();
 
-                add_ride_demand(new_ride, demand);
+                add_ride_demand(new_ride, *demand);
                 add_ride_stops(new_ride, demand, speed);
 
                 if (i == demand_number - 1)
@@ -163,14 +151,18 @@ int main()
             free(current);
         }
 
+        for (int i = 0; i < ride.demand_number; i++)
+            ride.demands[i].type = FINISHED;
+
         printf("\n");
 
         free(stop->ride);
     }
 
+    finalize(&scheduler);
+
     free(stop);
     free(new_ride);
-    free(scheduler.stops);
 
     return 0;
 }

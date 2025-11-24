@@ -15,6 +15,7 @@ int get_parent_index(int index);
 int get_left_node_index(int index);
 int get_right_node_index(int index);
 int is_valid_minheap(MinHeap *min_heap);
+void finalize(MinHeap *min_heap);
 
 void print_all(MinHeap *min_heap)
 {
@@ -149,4 +150,9 @@ int is_valid_minheap(MinHeap *min_heap)
     }
 
     return 1;
+}
+
+void finalize(MinHeap *min_heap)
+{
+    free(min_heap->stops);
 }

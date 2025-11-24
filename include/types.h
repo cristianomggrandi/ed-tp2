@@ -3,22 +3,36 @@
 
 #define MAX_CAPACITY 100
 
+typedef enum RideStopType
+{
+    ORIGIN = 1,
+    DESTINATION
+} RideStopType;
+
 typedef struct RideStop
 {
-    // 1 - Coleta
-    // 2 - Entrega
-    int type;
     double x, y;
     double time;
     double distance;
+    RideStopType type;
+    struct Demand *demand;
     struct RideStop *next;
     struct RideStop *prev;
     struct Ride *ride;
 } RideStop;
 
+typedef enum DemandStatus
+{
+    DEMANDED = 1,
+    SINGLE,
+    COMBINED,
+    FINISHED
+} DemandStatus;
+
 typedef struct Demand
 {
     int id;
+    DemandStatus type;
     int time;
     RideStop origin;
     RideStop destination;
@@ -26,13 +40,9 @@ typedef struct Demand
 
 typedef struct Segment
 {
-    // 1 - Coleta (2 pontos de embarque)
-    // 2 - Entrega (2 pontos de desembarque)
-    // 3 - Deslocamento (1 embarque e um desembarque)
     int type;
     RideStop start;
     RideStop end;
-    // int duration;
     double distance;
     struct Segment *next;
 } Segment;
