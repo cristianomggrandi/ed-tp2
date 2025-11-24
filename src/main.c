@@ -73,12 +73,7 @@ int main()
         bool should_stop = false;
         bool should_create_new_ride = false;
 
-        if (i == demand_number - 1)
-        {
-            should_stop = true;
-            should_create_new_ride = true;
-        }
-        else if (!meets_distance_criteria)
+        if (!meets_distance_criteria)
         {
             should_stop = true;
             should_create_new_ride = true;
@@ -96,8 +91,6 @@ int main()
             double efficiency = calculate_ride_efficiency(*new_ride);
             if (efficiency < 0)
                 printf("\nERRO: Quantidade de paradas invalida: %d", new_ride->stop_number);
-            if (efficiency > 1)
-                printf("\nERRO: Algo errado ocorreu no calculo de eficiencia: %lf", efficiency);
 
             if (efficiency < min_ride_efficiency)
             {
@@ -106,14 +99,15 @@ int main()
 
                 remove_last_added_stops(new_ride);
                 remove_last_added_demand(new_ride);
-
-                should_create_new_ride = true;
             }
             else if (new_ride->demand_number == max_capacity)
             {
                 should_stop = true;
             }
         }
+
+        if (i == demand_number - 1)
+            should_stop = true;
 
         if (should_stop)
         {
@@ -157,7 +151,7 @@ int main()
 
         Ride ride = *stop->ride;
 
-        printf("\n%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
+        printf("%.2f %.2f %d", ride.end_time, total_distance, ride.stop_number);
 
         RideStop *ride_stop = ride.stops;
         while (ride_stop != NULL)
@@ -169,10 +163,10 @@ int main()
             free(current);
         }
 
+        printf("\n");
+
         free(stop->ride);
     }
-
-    printf("\n");
 
     free(stop);
     free(new_ride);
