@@ -134,8 +134,6 @@ int main()
         }
 
         double total_distance = get_ride_total_distance(*stop->ride);
-        if (total_distance == -1)
-            printf("\nERRO: Erro calculando distância total para impressao");
 
         Ride ride = *stop->ride;
 

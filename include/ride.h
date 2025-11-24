@@ -114,6 +114,9 @@ double get_ride_total_distance(Ride ride)
         stop = stop->next;
     }
 
+    if (distance == -1)
+        printf("\nERRO: Erro calculando distância total para impressao");
+
     return distance;
 }
 
