@@ -15,7 +15,7 @@ typedef struct RideStop
     double time;
     double distance;
     RideStopType type;
-    struct Demand *demand;
+    int demandId;
     struct RideStop *next;
     struct RideStop *prev;
     struct Ride *ride;

@@ -12,13 +12,13 @@
 #endif
 
 Ride *create_new_ride();
-RideStop *create_new_stop(double x, double y, Ride *ride_p, Demand *demand, RideStop *prev, double speed, RideStopType type);
+RideStop *create_new_stop(double x, double y, Ride *ride_p, Demand demand, RideStop *prev, double speed, RideStopType type);
 double calculate_ride_efficiency(Ride ride);
 double get_sum_of_ride_demands_distances(Ride ride);
 double get_ride_total_distance(Ride ride);
 void add_ride_demand(Ride *ride, Demand demand);
 void remove_last_added_demand(Ride *ride);
-void add_ride_stops(Ride *ride, Demand *demand, double speed);
+void add_ride_stops(Ride *ride, Demand demand, double speed);
 void remove_last_added_stops(Ride *ride);
 double calculate_stop_time(RideStop *stop, double speed);
 
@@ -32,7 +32,7 @@ Ride *create_new_ride()
     return ride;
 }
 
-RideStop *create_new_stop(double x, double y, Ride *ride, Demand *demand, RideStop *prev, double speed, RideStopType type)
+RideStop *create_new_stop(double x, double y, Ride *ride, Demand demand, RideStop *prev, double speed, RideStopType type)
 {
     RideStop *new_stop = (RideStop *)malloc(sizeof(RideStop));
     new_stop->x = x;
@@ -41,7 +41,7 @@ RideStop *create_new_stop(double x, double y, Ride *ride, Demand *demand, RideSt
     new_stop->next = NULL;
     new_stop->ride = ride;
     new_stop->type = type;
-    new_stop->demand = demand;
+    new_stop->demandId = demand.id;
 
     double distance = 0;
     RideStop *stop = ride->stops;
@@ -147,12 +147,12 @@ void remove_last_added_demand(Ride *ride)
         }
 }
 
-void add_ride_stops(Ride *ride, Demand *demand, double speed)
+void add_ride_stops(Ride *ride, Demand demand, double speed)
 {
     if (ride->stop_number == 0)
     {
-        RideStop *stop = create_new_stop(demand->origin.x, demand->origin.y, ride, demand, NULL, speed, ORIGIN);
-        stop->next = create_new_stop(demand->destination.x, demand->destination.y, ride, demand, stop, speed, DESTINATION);
+        RideStop *stop = create_new_stop(demand.origin.x, demand.origin.y, ride, demand, NULL, speed, ORIGIN);
+        stop->next = create_new_stop(demand.destination.x, demand.destination.y, ride, demand, stop, speed, DESTINATION);
 
         ride->stops = stop;
         ride->stop_number = 2;
@@ -169,7 +169,7 @@ void add_ride_stops(Ride *ride, Demand *demand, double speed)
     }
 
     // Nova coleta
-    RideStop *new_stop = create_new_stop(demand->origin.x, demand->origin.y, ride, demand, stop, speed, ORIGIN);
+    RideStop *new_stop = create_new_stop(demand.origin.x, demand.origin.y, ride, demand, stop, speed, ORIGIN);
     new_stop->next = stop->next;
 
     // Conecta a última coleta anterior à nova última coleta
@@ -182,7 +182,7 @@ void add_ride_stops(Ride *ride, Demand *demand, double speed)
     }
 
     // Preenche novo stop ao final da lista
-    stop->next = create_new_stop(demand->destination.x, demand->destination.y, ride, demand, stop, speed, DESTINATION);
+    stop->next = create_new_stop(demand.destination.x, demand.destination.y, ride, demand, stop, speed, DESTINATION);
 
     ride->stop_number += 2;
 }

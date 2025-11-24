@@ -24,28 +24,26 @@ int main()
     struct MinHeap scheduler;
     initialize(&scheduler, demand_number);
 
-    struct Demand *demand;
-
     struct Ride *new_ride = NULL;
 
     for (int i = 0; i < demand_number; i++)
     {
-        demand = malloc(sizeof(Ride));
-        demand->type = DEMANDED;
+        struct Demand demand;
+        demand.type = DEMANDED;
 
         scanf("%d %d %lf %lf %lf %lf",
-              &demand->id,
-              &demand->time,
-              &demand->origin.x,
-              &demand->origin.y,
-              &demand->destination.x,
-              &demand->destination.y);
+              &demand.id,
+              &demand.time,
+              &demand.origin.x,
+              &demand.origin.y,
+              &demand.destination.x,
+              &demand.destination.y);
 
         if (new_ride == NULL)
         {
             new_ride = create_new_ride();
 
-            add_ride_demand(new_ride, *demand);
+            add_ride_demand(new_ride, demand);
             add_ride_stops(new_ride, demand, speed);
 
             if (i == demand_number - 1)
@@ -63,19 +61,19 @@ int main()
         bool should_stop = false;
         bool should_create_new_ride = false;
 
-        if (!meets_distance_criteria(new_ride, *demand, max_origin_distance, max_destination_distance))
+        if (!meets_distance_criteria(new_ride, demand, max_origin_distance, max_destination_distance))
         {
             should_stop = true;
             should_create_new_ride = true;
         }
-        else if ((double)((*demand).time - main_demand.time) > max_departure_interval)
+        else if ((double)(demand.time - main_demand.time) > max_departure_interval)
         {
             should_stop = true;
             should_create_new_ride = true;
         }
         else
         {
-            add_ride_demand(new_ride, *demand);
+            add_ride_demand(new_ride, demand);
             add_ride_stops(new_ride, demand, speed);
 
             double efficiency = calculate_ride_efficiency(*new_ride);
@@ -107,7 +105,7 @@ int main()
             {
                 new_ride = create_new_ride();
 
-                add_ride_demand(new_ride, *demand);
+                add_ride_demand(new_ride, demand);
                 add_ride_stops(new_ride, demand, speed);
 
                 if (i == demand_number - 1)
