@@ -3,5 +3,7 @@
         "cmath": "c",
         "minheap.h": "c",
         "types.h": "c"
-    }
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": []
 }

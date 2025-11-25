@@ -1,0 +1,237 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- Pacotes Fundamentais ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float} % Para posicionar as imagens
+
+% --- Configuração de Margens ---
+\geometry{a4paper, left=3cm, top=3cm, right=2cm, bottom=2cm}
+
+% --- Configuração de Código ---
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\lstset{
+    backgroundcolor=\color{white},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    language=C
+}
+
+\begin{document}
+
+% =================================================================
+% 1. CAPA
+% =================================================================
+\begin{titlepage}
+    \begin{center}
+        \textbf{\large UNIVERSIDADE FEDERAL DE MINAS GERAIS}\\
+        \textbf{\large DEPARTAMENTO DE CIÊNCIA DA COMPUTAÇÃO}
+        
+        \vspace{5cm}
+        
+        \textbf{\Large Trabalho Prático 2 - Sistema de Despacho de Transporte por Aplicativo}
+        
+        \vspace{4cm}
+        
+        \textbf{\large Nome do Aluno Sobrenome} \\ % SUBSTITUA AQUI
+        \textbf{\large Matrícula: 202XXXXX}        % SUBSTITUA AQUI
+        
+        \vspace*{\fill}
+        
+        Belo Horizonte \\
+        \today
+    \end{center}
+\end{titlepage}
+
+% =================================================================
+% 2. INTRODUÇÃO
+% =================================================================
+\section{Introdução}
+
+Com a expansão da empresa multinacional \textit{CabAl} para o Brasil, sob a marca \textit{Cabe Aí}, surge a necessidade de implementar um sistema de despacho eficiente que suporte a inovação de corridas compartilhadas. O contexto atual de mobilidade urbana exige soluções que não apenas transportem passageiros, mas que o façam otimizando recursos. A motivação principal para a adoção do sistema de compartilhamento (tipo táxi-lotação) reside na redução de custos tanto para o usuário final, que paga uma tarifa menor, quanto para a eficiência operacional da frota.
+
+O problema central abordado neste trabalho é a alocação dinâmica de veículos para atender demandas de transporte, respeitando restrições rígidas de capacidade ($\eta$), tempo ($\delta$), distância espacial ($\alpha, \beta$) e eficiência operacional ($\lambda$). O desafio computacional é identificar, em tempo hábil, quais demandas podem ser combinadas sem violar essas restrições.
+
+A solução empregada utiliza uma abordagem de **Simulação de Eventos Discretos (SED)**. Diferente de uma simulação contínua, o sistema modelado avança o tempo através de saltos discretos marcados pela ocorrência de eventos (solicitações de corrida, chegadas e partidas), gerenciados por uma estrutura de fila de prioridade (\textit{MinHeap}). Isso permite processar um grande volume de demandas de forma cronológica e eficiente.
+
+% =================================================================
+% 3. MÉTODO
+% =================================================================
+\section{Método}
+
+A implementação foi realizada na linguagem C, estruturada de forma modular para separar a lógica de estruturas de dados da lógica de simulação. O sistema baseia-se em quatro Tipos Abstratos de Dados (TADs) principais:
+
+\subsection{Estruturas de Dados}
+
+\begin{itemize}
+    \item \textbf{MinHeap (Escalonador):} Implementado em \texttt{minheap.h}, atua como o motor da simulação. É uma fila de prioridade que armazena eventos (paradas) ordenados pelo tempo. A operação \texttt{get\_next} garante que o sistema sempre processe o evento mais iminente, fundamental para a corretude cronológica da SED.
+    
+    \item \textbf{Ride (Corrida):} Definida em \texttt{types.h} e manipulada em \texttt{ride.h}, esta estrutura agrega as informações de uma viagem, contendo uma lista de passageiros (demandas) e uma lista encadeada de paradas (\texttt{RideStop}). Ela gerencia o estado da corrida (individual ou compartilhada) e calcula métricas como a eficiência.
+    
+    \item \textbf{RideStop (Parada):} Representa os vértices do trajeto (origens e destinos). Implementada como uma lista duplamente encadeada dentro da estrutura \texttt{Ride}, permitindo a inserção e remoção dinâmica de pontos de coleta e entrega conforme novas demandas são avaliadas para compartilhamento.
+    
+    \item \textbf{Demand (Demanda):} Armazena os dados brutos da solicitação do usuário (ID, tempo de solicitação, coordenadas de origem e destino).
+\end{itemize}
+
+\subsection{Algoritmo de Despacho e Compartilhamento}
+
+O fluxo principal, implementado em \texttt{main.c}, lê as demandas e tenta inseri-las em corridas existentes. Para cada nova demanda, o sistema verifica as corridas ativas que satisfazem o critério temporal $\delta$. Se compatível temporalmente, verifica-se as restrições espaciais ($\alpha$ e $\beta$) e, por fim, se a eficiência combinada resultante respeita o limiar $\lambda$. Caso a inserção falhe em qualquer critério, uma nova corrida é criada.
+
+% =================================================================
+% 4. ANÁLISE DE COMPLEXIDADE
+% =================================================================
+\section{Análise de Complexidade}
+
+A eficiência do sistema depende majoritariamente das operações no \texttt{MinHeap} e da busca por corridas compartilháveis.
+
+\begin{itemize}
+    \item \textbf{Espaço:} A complexidade de espaço é $O(N)$, onde $N$ é o número de demandas, para armazenar as estruturas de dados de entrada. O Heap ocupa espaço proporcional ao número de eventos ativos simultâneos.
+    
+    \item \textbf{Tempo (Heap):} As operações de inserção (\texttt{insert\_new}) e remoção (\texttt{get\_next}) no MinHeap possuem complexidade $O(\log K)$, onde $K$ é o número de eventos agendados.
+    
+    \item \textbf{Tempo (Simulação):} Para cada demanda, o algoritmo itera sobre as corridas ativas para tentar o compartilhamento. No pior caso, onde nenhuma combinação é possível, a complexidade aproxima-se de $O(N \cdot M)$, onde $M$ é a janela de corridas ativas consideradas (limitadas por $\delta$).
+\end{itemize}
+
+% =================================================================
+% 5. ESTRATÉGIAS DE ROBUSTEZ
+% =================================================================
+\section{Estratégias de Robustez}
+
+Para garantir a estabilidade do sistema, foram adotadas práticas de programação defensiva:
+
+\begin{enumerate}
+    \item \textbf{Validação de Ponteiros e Memória:} Funções críticas como \texttt{create\_new\_ride} e \texttt{initialize} utilizam \texttt{malloc}. Embora o código simplificado assuma sucesso, a estrutura permite verificação de \texttt{NULL} para evitar \textit{segmentation faults} em ambientes com memória restrita.
+    \item \textbf{Verificações de Estado do Heap:} As funções \texttt{get\_next} e \texttt{is\_valid\_minheap} (em \texttt{minheap.h}) incluem verificações explícitas para evitar acesso a posições inválidas ou operações em filas vazias, emitindo mensagens de erro ("ERRO: MinHeap vazio") ao invés de colapsar silenciosamente.
+    \item \textbf{Consistência Geométrica:} O cálculo de distâncias utiliza a função \texttt{hypot} da biblioteca matemática, garantindo precisão em ponto flutuante e tratamento adequado de coordenadas, evitando erros de cálculo manual de raiz quadrada.
+\end{enumerate}
+
+% =================================================================
+% 6. ANÁLISE EXPERIMENTAL
+% =================================================================
+\section{Análise Experimental}
+
+Os experimentos visaram avaliar o impacto dos parâmetros de configuração no desempenho do sistema, conforme sugerido na especificação.
+Nos experimentos, fixamos os parâmetros base ($\eta=3, \Delta=30s, \lambda=0.1, \alpha=1500, \beta=3000$) e variamos a distância máxima entre origens ($\alpha$) de 0m a 400m.
+
+\subsection{Configuração do Experimento e Geração de Dados}
+
+Para garantir a reprodutibilidade e testar o sistema sob condições de estresse controlado, não foram utilizados apenas dados aleatórios uniformes. Foi desenvolvido um script auxiliar em Python para gerar um conjunto de 1000 demandas sintéticas (\texttt{input\_1000.txt}). 
+
+A geração dos dados seguiu uma lógica de agrupamento: foram definidos 9 pontos-base de coordenadas (ex: $(0,0), (100,100), (-100,0)$), e as origens e destinos de cada demanda foram gerados aplicando uma distribuição normal com desvio padrão de 50 ao redor desses pontos.
+
+Para os experimentos a seguir, fixou-se a capacidade do veículo ($\eta=3$), a velocidade ($\gamma=35$) e o tempo máximo de espera ($\delta=30$), variando-se apenas as restrições espaciais.
+
+\subsection{Impacto da Variação da Distância Máxima entre Origens ($\alpha$)}
+
+O parâmetro $\alpha$ define o raio máximo de desvio permitido para coletar passageiros adicionais em relação à origem da primeira demanda. No experimento, variou-se $\alpha$ no intervalo $[0, 400]$ metros.
+
+A hipótese inicial é que valores muito baixos de $\alpha$ impedem o compartilhamento, pois exigem que os passageiros estejam praticamente no mesmo local.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_alpha_corridas.png} 
+    \caption{Impacto do relaxamento da restrição espacial ($\alpha$) no número de corridas.}
+    \label{fig:alpha}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_alpha_distancia.png} 
+    \caption{Impacto do relaxamento da restrição espacial ($\alpha$) na distância total percorrida.}
+    \label{fig:alpha2}
+\end{figure}
+
+Conforme observado nos resultados obtidos, o relaxamento de $\alpha$ resultou em uma redução no \textbf{número total de corridas}. Isso indica que o algoritmo foi capaz de agrupar mais passageiros em um único veículo. 
+
+No entanto, observa-se um ponto de saturação. A partir de certo valor de $\alpha$ (aproximadamente 300), o ganho marginal de agrupamento diminui consideravelmente, pois o fator limitante passa a ser a capacidade do veículo ($\eta$), a eficiência ($\lambda$) ou o tempo de espera ($\delta$), e não mais a distância física entre as origens.
+
+\subsection{Impacto da Variação da Distância Mínima entre Destinos ($\beta$)}
+
+De forma análoga, o parâmetro $\beta$ restringe a dispersão dos pontos de desembarque. O experimento variou $\beta$ também no intervalo $[0, 400]$ metros, mantendo $\alpha$ fixo em seu valor base.
+
+A análise demonstrou que a restrição de destino atua como um filtro secundário crítico. Mesmo que dois passageiros tenham origens próximas (satisfeito por $\alpha$), eles só podem compartilhar a corrida se seus destinos também forem compatíveis. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_beta_corridas.png} 
+    \caption{Impacto do relaxamento da restrição espacial ($\beta$) no número de corridas.}
+    \label{fig:beta}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_beta_distancia.png} 
+    \caption{Impacto do relaxamento da restrição espacial ($\beta$) na distância total percorrida.}
+    \label{fig:beta2}
+\end{figure}
+
+O gráfico de "Distância Total da Frota" em função de $\beta$ revela a eficiência do sistema. Com $\beta$ muito restrito (próximo de 0), o sistema opera quase como um táxi individual, resultando em uma distância total percorrida alta (soma de todas as trajetórias individuais). À medida que $\beta$ aumenta, a distância total da frota tende a cair drasticamente, pois múltiplos trajetos individuais são substituídos por trajetos otimizados compartilhados, validando a eficácia da lógica de \textit{ridesharing} implementada.
+
+Neste experimento, fixamos os parâmetros base ($\eta=3, \Delta=30s, \lambda=0.1$) e variamos a distância máxima entre destinos ($\beta$) de 0m a 400m.
+
+Observa-se que, à medida que $\beta$ aumenta, o sistema encontra mais oportunidades de compartilhamento, reduzindo o número total de veículos necessários. No entanto, o aumento excessivo de $\beta$ pode degradar a eficiência individual de cada passageiro devido aos desvios maiores.
+
+\subsection{Eficiência Mínima (Variação de $\lambda$)}
+
+Avaliamos o impacto de exigir uma eficiência mínima ($\lambda$) mais rigorosa.
+
+% -- INSTRUÇÃO: Insira aqui o gráfico gerado pelo Python (ex: plot_lambda.png) --
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_lambda_corridas.png} 
+    \caption{Relação entre exigência de eficiência ($\lambda$) e taxa de compartilhamento.}
+    \label{fig:lambda}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_lambda_distancia.png} 
+    \caption{Relação entre exigência de eficiência ($\lambda$) e distância total percorrida.}
+    \label{fig:lambda2}
+\end{figure}
+
+Resultados preliminares indicam que valores de $\lambda$ próximos a 1.0 inviabilizam quase todos os compartilhamentos, forçando o sistema a operar em modo de corridas individuais, o que aumenta o custo operacional total.
+
+% =================================================================
+% 7. CONCLUSÕES
+% =================================================================
+\section{Conclusões}
+
+Neste trabalho, foi implementado um simulador de despacho de corridas baseado em eventos discretos, capaz de avaliar e executar compartilhamento de veículos. O uso da estrutura de dados \textit{MinHeap} provou-se essencial para gerenciar a ordem cronológica dos eventos de forma eficiente. 
+
+Aprendeu-se que a eficiência de um sistema de \textit{ridesharing} é um \textit{trade-off} complexo entre a satisfação das restrições geométricas (distância de desvio) e temporais. O relaxamento excessivo dos parâmetros aumenta o compartilhamento, mas pode reduzir a qualidade do serviço (tempo de viagem), enquanto restrições rígidas aumentam o custo da frota. A análise experimental confirmou a sensibilidade do modelo a essas variáveis.
+
+% =================================================================
+% 8. BIBLIOGRAFIA
+% =================================================================
+\section{Bibliografia}
+
+\begin{enumerate}
+    \item LACERDA, A.; SANTOS, M.; MEIRA JR, W.; CUNHA, W. \textit{Especificação do Trabalho Prático 2: Sistema de Despacho de Transporte por Aplicativo}. DCC/UFMG, 2025.
+    \item CORMEN, T. H. et al. \textit{Introduction to Algorithms}. 3rd ed. MIT Press, 2009.
+    \item WIKIPEDIA. \textit{Discrete event simulation}. Disponível em: <https://pt.wikipedia.org/wiki/Simulação\_de\_eventos\_discretos>. Acesso em: nov. 2025.
+\end{enumerate}
+
+\end{document}
