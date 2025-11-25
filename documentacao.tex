@@ -133,7 +133,7 @@ Para garantir a estabilidade do sistema, foram adotadas práticas de programaç�
 \section{Análise Experimental}
 
 Os experimentos visaram avaliar o impacto dos parâmetros de configuração no desempenho do sistema, conforme sugerido na especificação.
-Nos experimentos, fixamos os parâmetros base ($\eta=3, \Delta=30s, \lambda=0.1, \alpha=1500, \beta=3000$) e variamos a distância máxima entre origens ($\alpha$) de 0m a 400m.
+Nos experimentos, fixamos os parâmetros base como $\eta=3, \Delta=30s, \lambda=0.1, \alpha=1500, \beta=3000$. A partir deles, foram variados $\alpha$, $\beta$ e $\lambda$.
 
 \subsection{Configuração do Experimento e Geração de Dados}
 
@@ -143,11 +143,23 @@ A geração dos dados seguiu uma lógica de agrupamento: foram definidos 9 ponto
 
 Para os experimentos a seguir, fixou-se a capacidade do veículo ($\eta=3$), a velocidade ($\gamma=35$) e o tempo máximo de espera ($\delta=30$), variando-se apenas as restrições espaciais.
 
+\subsubsection{Métricas Avaliadas}
+
+Para avaliar o desempenho do sistema de compartilhamento, foram coletadas três métricas principais em cada experimento:
+
+\begin{enumerate}
+    \item \textbf{Número de Corridas:} Representa a quantidade total de veículos despachados para atender todas as demandas. Esta métrica é inversamente proporcional à eficiência do agrupamento: quanto menor o número de corridas para um conjunto fixo de demandas, maior foi a taxa de compartilhamento. Um sistema ideal de compartilhamento de corridas minimiza esta métrica respeitando as restrições de qualidade de serviço.
+    
+    \item \textbf{Distância Total Percorrida:} Soma das distâncias percorridas por todos os veículos da frota. Esta métrica reflete o custo operacional total do sistema, incluindo consumo de combustível, desgaste dos veículos e emissões. O compartilhamento eficiente tende a reduzir esta métrica, pois substitui múltiplas trajetórias individuais por trajetos otimizados que atendem múltiplos passageiros. No entanto, desvios excessivos para coleta/entrega podem aumentar a distância total, evidenciando o \textit{trade-off} entre agrupamento e eficiência de rota.
+    
+    \item \textbf{Proporção Corridas/Demandas:} Razão entre o número de corridas realizadas e o número total de demandas. Esta métrica normalizada varia entre 0 e 1, onde 1.0 indica ausência total de compartilhamento (cada demanda gerou uma corrida individual) e valores próximos de 0 indicam alto grau de agrupamento. Por exemplo, uma proporção de 0.5 significa que, em média, cada corrida atendeu 2 demandas. Esta métrica é particularmente útil para comparar o desempenho do sistema sob diferentes configurações de parâmetros, independentemente do tamanho do conjunto de dados.
+\end{enumerate}
+
 \subsection{Impacto da Variação da Distância Máxima entre Origens ($\alpha$)}
 
-O parâmetro $\alpha$ define o raio máximo de desvio permitido para coletar passageiros adicionais em relação à origem da primeira demanda. No experimento, variou-se $\alpha$ no intervalo $[0, 400]$ metros.
+O parâmetro $\alpha$ define o raio máximo de desvio permitido para coletar passageiros adicionais em relação à origem da primeira demanda. No experimento, variou-se $\alpha$ no intervalo $[0, 500]$ metros. A proporção corridas/demandas é uma métrica direta da eficiência do agrupamento: um valor de 1.0 indica que cada demanda gerou uma corrida individual (sem compartilhamento), enquanto valores menores indicam agrupamento bem-sucedido. 
 
-A hipótese inicial é que valores muito baixos de $\alpha$ impedem o compartilhamento, pois exigem que os passageiros estejam praticamente no mesmo local.
+A hipótese inicial é que valores muito baixos de $\alpha$ impedem o compartilhamento, pois exigem que os passageiros estejam praticamente no mesmo local, resultando em proporções próximas de 1.0.
 
 \begin{figure}[H]
     \centering
@@ -163,15 +175,22 @@ A hipótese inicial é que valores muito baixos de $\alpha$ impedem o compartilh
     \label{fig:alpha2}
 \end{figure}
 
-Conforme observado nos resultados obtidos, o relaxamento de $\alpha$ resultou em uma redução no \textbf{número total de corridas}. Isso indica que o algoritmo foi capaz de agrupar mais passageiros em um único veículo. 
+Conforme observado nos resultados obtidos, o relaxamento de $\alpha$ resultou em uma redução no número total de corridas. Isso indica que o algoritmo foi capaz de agrupar mais passageiros em um único veículo. 
 
 No entanto, observa-se um ponto de saturação. A partir de certo valor de $\alpha$ (aproximadamente 300), o ganho marginal de agrupamento diminui consideravelmente, pois o fator limitante passa a ser a capacidade do veículo ($\eta$), a eficiência ($\lambda$) ou o tempo de espera ($\delta$), e não mais a distância física entre as origens.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_alpha_proporcao.png} 
+    \caption{Proporção entre número de corridas e demandas em função de $\alpha$.}
+    \label{fig:alpha_prop}
+\end{figure}
+
+Os resultados confirmam a hipótese: com $\alpha$ próximo de 0, a proporção se aproxima de 1.0, indicando ausência de compartilhamento. À medida que $\alpha$ aumenta, observa-se uma redução significativa na proporção, demonstrando que o relaxamento da restrição espacial permite agrupar mais demandas por corrida. A curva apresenta um ponto de saturação em torno de 300 metros, onde o ganho marginal diminui, sugerindo que outros parâmetros ($\beta$, $\eta$ ou $\lambda$) passam a limitar o agrupamento.
+
 \subsection{Impacto da Variação da Distância Mínima entre Destinos ($\beta$)}
 
-De forma análoga, o parâmetro $\beta$ restringe a dispersão dos pontos de desembarque. O experimento variou $\beta$ também no intervalo $[0, 400]$ metros, mantendo $\alpha$ fixo em seu valor base.
-
-A análise demonstrou que a restrição de destino atua como um filtro secundário crítico. Mesmo que dois passageiros tenham origens próximas (satisfeito por $\alpha$), eles só podem compartilhar a corrida se seus destinos também forem compatíveis. 
+O parâmetro $\beta$ restringe a dispersão dos pontos de desembarque. O experimento variou $\beta$ no intervalo $[0, 500]$ metros, mantendo $\alpha$ fixo em seu valor base. Este parâmetro atua como um filtro secundário crítico: mesmo que dois passageiros tenham origens próximas (satisfeito por $\alpha$), eles só podem compartilhar a corrida se seus destinos também forem compatíveis. Com $\beta$ restritivo, apenas passageiros com destinos muito próximos podem ser agrupados, resultando em proporções elevadas (próximas de 1.0). 
 
 \begin{figure}[H]
     \centering
@@ -187,17 +206,25 @@ A análise demonstrou que a restrição de destino atua como um filtro secundár
     \label{fig:beta2}
 \end{figure}
 
-O gráfico de "Distância Total da Frota" em função de $\beta$ revela a eficiência do sistema. Com $\beta$ muito restrito (próximo de 0), o sistema opera quase como um táxi individual, resultando em uma distância total percorrida alta (soma de todas as trajetórias individuais). À medida que $\beta$ aumenta, a distância total da frota tende a cair drasticamente, pois múltiplos trajetos individuais são substituídos por trajetos otimizados compartilhados, validando a eficácia da lógica de \textit{ridesharing} implementada.
+O gráfico de "Distância Total da Frota" em função de $\beta$ revela a eficiência do sistema. Com $\beta$ muito restrito (próximo de 0), o sistema opera quase como um táxi individual, resultando em uma distância total percorrida alta (soma de todas as trajetórias individuais). À medida que $\beta$ aumenta, a distância total da frota tende a cair drasticamente, pois múltiplos trajetos individuais são substituídos por trajetos otimizados compartilhados, validando a eficácia da lógica de compartilhamento de corridas implementada.
 
-Neste experimento, fixamos os parâmetros base ($\eta=3, \Delta=30s, \lambda=0.1$) e variamos a distância máxima entre destinos ($\beta$) de 0m a 400m.
+Neste experimento, fixamos os parâmetros base ($\eta=3, \Delta=30s, \lambda=0.1$) e variamos a distância máxima entre destinos ($\beta$) de 0m 500m.
 
 Observa-se que, à medida que $\beta$ aumenta, o sistema encontra mais oportunidades de compartilhamento, reduzindo o número total de veículos necessários. No entanto, o aumento excessivo de $\beta$ pode degradar a eficiência individual de cada passageiro devido aos desvios maiores.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_beta_proporcao.png} 
+    \caption{Proporção entre número de corridas e demandas em função de $\beta$.}
+    \label{fig:beta_prop}
+\end{figure}
+
+O gráfico confirma o papel crítico de $\beta$ no agrupamento. O relaxamento progressivo de $\beta$ reduz a proporção corridas/demandas, permitindo que o sistema agrupe demandas com destinos mais dispersos. A curva demonstra que $\beta$ é um gargalo significativo: mesmo com origens compatíveis, destinos incompatíveis impedem o compartilhamento. O comportamento é similar ao observado com $\alpha$, indicando que ambos os parâmetros espaciais (origem e destino) devem ser ajustados em conjunto para otimizar o agrupamento no sistema.
+
 \subsection{Eficiência Mínima (Variação de $\lambda$)}
 
-Avaliamos o impacto de exigir uma eficiência mínima ($\lambda$) mais rigorosa.
+O parâmetro $\lambda$ representa a eficiência mínima aceitável para cada passageiro em uma corrida compartilhada, definida como a razão entre a distância direta (origem-destino) e a distância real percorrida. Valores baixos de $\lambda$ (ex: 0.1) permitem desvios significativos, facilitando o agrupamento, enquanto valores próximos de 1.0 exigem trajetos quase diretos, inviabilizando compartilhamentos. Este parâmetro controla o trade-off entre eficiência operacional da frota (mais compartilhamento) e qualidade de serviço individual (menor tempo de viagem).
 
-% -- INSTRUÇÃO: Insira aqui o gráfico gerado pelo Python (ex: plot_lambda.png) --
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{grafico_lambda_corridas.png} 
@@ -212,16 +239,29 @@ Avaliamos o impacto de exigir uma eficiência mínima ($\lambda$) mais rigorosa.
     \label{fig:lambda2}
 \end{figure}
 
-Resultados preliminares indicam que valores de $\lambda$ próximos a 1.0 inviabilizam quase todos os compartilhamentos, forçando o sistema a operar em modo de corridas individuais, o que aumenta o custo operacional total.
+Os gráficos revelam o comportamento esperado do sistema em relação à eficiência mínima. O número de corridas aumenta monotonicamente com $\lambda$, indicando que restrições mais rígidas de eficiência reduzem as oportunidades de agrupamento. Com $\lambda$ próximo de 1.0, o sistema opera quase exclusivamente com corridas individuais, maximizando o número de veículos necessários.
+
+A distância total percorrida pela frota apresenta comportamento interessante: inicialmente, com $\lambda$ baixo, a distância é relativamente alta devido aos desvios necessários para coletar e entregar múltiplos passageiros. À medida que $\lambda$ aumenta, o sistema rejeita compartilhamentos com desvios excessivos, o que pode reduzir ligeiramente a distância total em alguns casos. No entanto, com $\lambda$ muito alto, a distância total volta a aumentar, pois o sistema é forçado a realizar múltiplas corridas individuais ao invés de trajetos compartilhados otimizados. Este comportamento evidencia que existe um ponto ótimo de $\lambda$ que equilibra compartilhamento e eficiência de rota.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grafico_lambda_proporcao.png} 
+    \caption{Proporção entre número de corridas e demandas em função de $\lambda$.}
+    \label{fig:lambda_prop}
+\end{figure}
+
+Os resultados demonstram claramente o impacto de $\lambda$ no agrupamento. Com valores baixos (0.1 a 0.5), a proporção corridas/demandas permanece relativamente baixa, indicando alto grau de compartilhamento. À medida que $\lambda$ aumenta, o sistema torna-se progressivamente mais restritivo, rejeitando compartilhamentos que impliquem desvios excessivos. Com $\lambda$ próximo de 1.0, a proporção se aproxima de 1.0, indicando que o sistema opera quase exclusivamente com corridas individuais. Este comportamento evidencia que $\lambda$ é o parâmetro de controle mais direto do trade-off entre custo operacional e qualidade de serviço.
 
 % =================================================================
 % 7. CONCLUSÕES
 % =================================================================
 \section{Conclusões}
 
-Neste trabalho, foi implementado um simulador de despacho de corridas baseado em eventos discretos, capaz de avaliar e executar compartilhamento de veículos. O uso da estrutura de dados \textit{MinHeap} provou-se essencial para gerenciar a ordem cronológica dos eventos de forma eficiente. 
+Neste trabalho, foi implementado um simulador de despacho de corridas baseado em Simulação de Eventos Discretos (SED), capaz de avaliar e executar compartilhamento de veículos sob múltiplas restrições operacionais. A abordagem de SED mostrou-se adequada para modelar o sistema de transporte, onde o estado do sistema evolui através de eventos pontuais no tempo (solicitações de corrida, partidas e chegadas) ao invés de mudanças contínuas. O uso da estrutura de dados \textit{MinHeap} como escalonador de eventos provou-se essencial para gerenciar a ordem cronológica dos eventos de forma eficiente, garantindo que cada evento seja processado no momento correto da simulação.
 
-Aprendeu-se que a eficiência de um sistema de \textit{ridesharing} é um \textit{trade-off} complexo entre a satisfação das restrições geométricas (distância de desvio) e temporais. O relaxamento excessivo dos parâmetros aumenta o compartilhamento, mas pode reduzir a qualidade do serviço (tempo de viagem), enquanto restrições rígidas aumentam o custo da frota. A análise experimental confirmou a sensibilidade do modelo a essas variáveis.
+A implementação da SED permitiu avaliar sistematicamente o impacto dos parâmetros de configuração no desempenho do sistema. Os experimentos demonstraram que a eficiência de um sistema de compartilhamento de corridas é um trade-off complexo entre múltiplas dimensões: restrições espaciais ($\alpha$ e $\beta$), temporais ($\delta$) e de qualidade de serviço ($\lambda$). A análise experimental confirmou que os parâmetros espaciais devem ser ajustados em conjunto para otimizar o agrupamento, e que $\lambda$ controla diretamente o equilíbrio entre eficiência operacional da frota e qualidade de serviço individual.
+
+A metodologia de simulação adotada demonstrou ser uma ferramenta poderosa para análise de sistemas complexos de despacho, permitindo explorar cenários e configurações que seriam impraticáveis de testar em ambiente real. A modularidade do código e a separação clara entre estruturas de dados e lógica de simulação facilitam futuras extensões, como a incorporação de múltiplas classes de veículos, priorização dinâmica de demandas ou algoritmos de roteamento mais sofisticados.
 
 % =================================================================
 % 8. BIBLIOGRAFIA
@@ -229,9 +269,8 @@ Aprendeu-se que a eficiência de um sistema de \textit{ridesharing} é um \texti
 \section{Bibliografia}
 
 \begin{enumerate}
-    \item LACERDA, A.; SANTOS, M.; MEIRA JR, W.; CUNHA, W. \textit{Especificação do Trabalho Prático 2: Sistema de Despacho de Transporte por Aplicativo}. DCC/UFMG, 2025.
-    \item CORMEN, T. H. et al. \textit{Introduction to Algorithms}. 3rd ed. MIT Press, 2009.
-    \item WIKIPEDIA. \textit{Discrete event simulation}. Disponível em: <https://pt.wikipedia.org/wiki/Simulação\_de\_eventos\_discretos>. Acesso em: nov. 2025.
+    \item WIKIPEDIA. \textit{Simulação de eventos discretos}. Disponível em: \url{https://pt.wikipedia.org/wiki/Simulacao_de_eventos_discretos}. Acesso em: nov. 2025.
+    \item Slides das aulas de Estrutura de Dados acerca de Heap. DCC/UFMG, 2025.
 \end{enumerate}
 
 \end{document}
