@@ -171,47 +171,22 @@ Para garantir a estabilidade e confiabilidade do sistema, foram implementadas ci
 Implementada no módulo \texttt{validation.h}, esta estratégia valida todos os dados de entrada antes do processamento:
 
 \begin{itemize}
-    \item \textbf{Parâmetros de Configuração:} A função \texttt{validate\_config\_params()} verifica se os parâmetros do sistema estão em intervalos válidos: capacidade $\eta > 0$ e $\eta \leq$ MAX\_CAPACITY, velocidade $\gamma > 0$, tempo máximo de espera $\delta \geq 0$, distâncias máximas $\alpha, \beta \geq 0$, e eficiência mínima $\lambda \in [0,1]$. Valores fora desses intervalos causam encerramento controlado do programa com mensagem de erro descritiva.
+    \item \textbf{Parâmetros de Configuração:} A função \texttt{validate\_config\_params()} verifica se os parâmetros do sistema estão em intervalos válidos. Valores fora desses intervalos causam encerramento controlado do programa com mensagem de erro descritiva.
     
-    \item \textbf{Validação de Demandas:} A função \texttt{validate\_demand()} verifica cada solicitação individualmente, garantindo que coordenadas sejam válidas, que origem e destino sejam diferentes (distância $> 0.01$), e que o tempo de solicitação seja não-negativo. Demandas inválidas são descartadas com aviso, permitindo que o sistema continue processando as demais.
-    
-    \item \textbf{Contagem de Demandas:} A função \texttt{validate\_demand\_count()} verifica se o número de demandas é positivo e emite aviso se exceder 100.000, indicando possível problema de desempenho.
+    \item \textbf{Validação de Demandas:} A função \texttt{validate\_demand()} verifica cada solicitação individualmente, garantindo que coordenadas sejam válidas, que origem e destino sejam diferentes (distância $> 0.01$), que o tempo de solicitação seja não-negativo e o número de demandas positivo. Demandas inválidas são descartadas com aviso, permitindo que o sistema continue processando as demais.
 \end{itemize}
 
 \subsection{Verificação de Alocação de Memória}
 
-Todas as chamadas a \texttt{malloc()} foram instrumentadas com verificação de retorno NULL:
-
-\begin{itemize}
-    \item \texttt{create\_new\_ride()}: Verifica alocação de estrutura Ride
-    \item \texttt{initialize()}: Verifica alocação do array de paradas do MinHeap
-    \item \texttt{create\_new\_stop()}: Verifica alocação de cada parada individual
-\end{itemize}
-
-Em caso de falha de alocação, o sistema imprime mensagem de erro detalhada e encerra com \texttt{exit(1)}, prevenindo segmentation faults por acesso a ponteiros NULL.
+Todas as chamadas a \texttt{malloc()} foram instrumentadas com verificação de retorno NULL. As funções \texttt{create\_new\_ride()}, \texttt{initialize()} e \texttt{create\_new\_stop()} verificam se a alocação foi bem-sucedida antes de prosseguir. Em caso de falha de alocação, o sistema imprime mensagem de erro detalhada indicando o contexto da falha e encerra a execução com \texttt{exit(1)}, prevenindo segmentation faults por acesso a ponteiros NULL. Esta abordagem garante que o programa não continue operando em estado inconsistente quando recursos de memória são insuficientes.
 
 \subsection{Proteção contra Divisão por Zero}
 
-Operações aritméticas críticas foram protegidas contra divisão por zero:
-
-\begin{itemize}
-    \item \texttt{calculate\_stop\_time()}: Verifica se velocidade $> 0$ antes de calcular tempo = distância/velocidade
-    \item \texttt{calculate\_ride\_efficiency()}: Verifica se distância total $> 0.0001$ (tolerância para comparação de floats) antes de calcular eficiência = distância\_original/distância\_total
-\end{itemize}
-
-Estas verificações previnem resultados que corromperiam o estado do sistema.
+Operações aritméticas críticas foram protegidas contra divisão por zero para prevenir resultados indefinidos que corromperiam o estado do sistema. A função \texttt{calculate\_stop\_time()} verifica se a velocidade é maior que zero antes de calcular o tempo como razão entre distância e velocidade. Similarmente, \texttt{calculate\_ride\_efficiency()} verifica se a distância total é maior que 0.0001 (tolerância para comparação de floats) antes de calcular a eficiência como razão entre distância original e distância total. Quando violações são detectadas, as funções retornam valores de erro (-1) e imprimem mensagens descritivas, permitindo diagnóstico preciso do problema.
 
 \subsection{Verificação de Limites de Arrays}
 
-Implementada proteção contra buffer overflow no array \texttt{demands[MAX\_CAPACITY]}:
-
-\begin{itemize}
-    \item \texttt{add\_ride\_demand()}: Verifica se \texttt{demand\_number < MAX\_CAPACITY} antes de adicionar
-    \item \texttt{remove\_last\_added\_demand()}: Verifica se \texttt{demand\_number > 0} antes de remover
-    \item \texttt{meets\_distance\_criteria()}: Verifica se \texttt{demand\_number $\leq$ MAX\_CAPACITY} antes de iterar
-\end{itemize}
-
-Violações de limites resultam em mensagem de erro e aborto da operação, prevenindo corrupção de memória.
+Proteção contra buffer overflow foi implementada no array \texttt{demands[MAX\_CAPACITY]} através de verificações em todas as operações de acesso. A função \texttt{add\_ride\_demand()} verifica se \texttt{demand\_number} é menor que \texttt{MAX\_CAPACITY} antes de adicionar uma nova demanda, enquanto \texttt{remove\_last\_added\_demand()} verifica se há demandas para remover (\texttt{demand\_number > 0}). A função \texttt{meets\_distance\_criteria()} também valida que o número de demandas não excede a capacidade máxima antes de iterar sobre o array. Violações de limites resultam em mensagem de erro detalhada e aborto da operação, prevenindo corrupção de memória e comportamento indefinido.
 
 \subsection{Validação de Invariantes de Estruturas de Dados}
 
