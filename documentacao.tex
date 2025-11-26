@@ -95,9 +95,61 @@ A implementação foi realizada na linguagem C, estruturada de forma modular par
     \item \textbf{Demand (Demanda):} Armazena os dados brutos da solicitação do usuário (ID, tempo de solicitação, coordenadas de origem e destino).
 \end{itemize}
 
+\subsection{Descrição Detalhada da Implementação}
+
+A implementação segue uma arquitetura modular com separação clara entre tipos de dados (\texttt{types.h}), estruturas de dados (\texttt{minheap.h}), lógica de corridas (\texttt{ride.h}), funções auxiliares (\texttt{util.h}) e fluxo principal (\texttt{main.c}).
+
+\subsubsection{Tipos Abstratos de Dados}
+
+\textbf{MinHeap:} Implementa uma fila de prioridade baseada em heap binário mínimo. As principais operações são:
+\begin{itemize}
+    \item \texttt{initialize(MinHeap*, int)}: Aloca memória para o heap com tamanho especificado
+    \item \texttt{insert\_new(MinHeap*, RideStop*, double)}: Insere uma nova parada no heap, calculando seu tempo e mantendo a propriedade de heap mínimo através de \textit{heapify-up}
+    \item \texttt{get\_next(MinHeap*)}: Remove e retorna a parada com menor tempo, restaurando a propriedade de heap através de \textit{heapify-down}
+    \item \texttt{peek(MinHeap*)}: Retorna a próxima parada sem removê-la
+    \item \texttt{finalize(MinHeap*, double)}: Processa todos os eventos restantes, imprimindo os resultados das corridas
+\end{itemize}
+
+\textbf{Ride:} Representa uma corrida compartilhada. Principais funções:
+\begin{itemize}
+    \item \texttt{create\_new\_ride()}: Aloca e inicializa uma nova corrida vazia
+    \item \texttt{add\_ride\_demand(Ride*, Demand)}: Adiciona uma demanda à corrida, atualizando o status (SINGLE ou COMBINED)
+    \item \texttt{add\_ride\_stops(Ride*, Demand, double)}: Insere as paradas de origem e destino na lista encadeada de paradas, mantendo a ordem: todas as origens primeiro, seguidas de todos os destinos
+    \item \texttt{calculate\_ride\_efficiency(Ride)}: Calcula a eficiência como a razão entre a soma das distâncias diretas de cada passageiro e a distância total percorrida
+    \item \texttt{get\_ride\_total\_distance(Ride)}: Percorre a lista de paradas calculando a distância total do trajeto
+    \item \texttt{remove\_last\_added\_demand(Ride*)}: Remove a última demanda adicionada (usado quando uma tentativa de compartilhamento falha)
+    \item \texttt{remove\_last\_added\_stops(Ride*)}: Remove as duas últimas paradas (origem e destino) da lista encadeada
+\end{itemize}
+
+\textbf{RideStop:} Representa uma parada (origem ou destino) no trajeto. Implementada como nó de lista duplamente encadeada, contém coordenadas $(x, y)$, tempo de chegada, distância acumulada, tipo (ORIGIN ou DESTINATION), ID da demanda associada e ponteiros para a corrida e paradas adjacentes.
+
+\textbf{Demand:} Armazena informações de uma solicitação: ID, tempo de solicitação, status (DEMANDED, SINGLE, COMBINED, FINISHED) e estruturas RideStop para origem e destino.
+
+\subsubsection{Funções Auxiliares}
+
+O módulo \texttt{util.h} fornece funções de suporte:
+\begin{itemize}
+    \item \texttt{get\_distance(RideStop, RideStop)}: Calcula a distância euclidiana entre duas paradas usando \texttt{hypot()}
+    \item \texttt{meets\_distance\_criteria(Ride*, Demand, double, double)}: Verifica se uma demanda satisfaz as restrições espaciais $\alpha$ e $\beta$ em relação a todas as demandas já presentes na corrida
+\end{itemize}
+
 \subsection{Algoritmo de Despacho e Compartilhamento}
 
-O fluxo principal, implementado em \texttt{main.c}, lê as demandas e tenta inseri-las em corridas existentes. Para cada nova demanda, o sistema verifica as corridas ativas que satisfazem o critério temporal $\delta$. Se compatível temporalmente, verifica-se as restrições espaciais ($\alpha$ e $\beta$) e, por fim, se a eficiência combinada resultante respeita o limiar $\lambda$. Caso a inserção falhe em qualquer critério, uma nova corrida é criada.
+O fluxo principal, implementado em \texttt{main.c}, lê os parâmetros de configuração e as demandas, processando-as sequencialmente. Para cada nova demanda, o sistema:
+
+\begin{enumerate}
+    \item Itera sobre as corridas ativas (ainda não finalizadas)
+    \item Verifica se a corrida tem capacidade disponível ($\eta$)
+    \item Verifica o critério temporal: se o tempo de solicitação da nova demanda está dentro da janela $\delta$ em relação ao início da corrida
+    \item Verifica as restrições espaciais usando \texttt{meets\_distance\_criteria()}, garantindo que as distâncias entre origens ($\alpha$) e destinos ($\beta$) sejam respeitadas
+    \item Tenta adicionar a demanda à corrida usando \texttt{add\_ride\_demand()} e \texttt{add\_ride\_stops()}
+    \item Calcula a eficiência resultante com \texttt{calculate\_ride\_efficiency()}
+    \item Se a eficiência for maior ou igual a $\lambda$, aceita o compartilhamento; caso contrário, remove a demanda usando \texttt{remove\_last\_added\_demand()} e \texttt{remove\_last\_added\_stops()}
+    \item Se nenhuma corrida compatível for encontrada, cria uma nova corrida individual
+    \item Insere a primeira parada (origem) da corrida no MinHeap usando \texttt{insert\_new()}
+\end{enumerate}
+
+Após processar todas as demandas, o sistema chama \texttt{finalize()} no MinHeap, que processa os eventos cronologicamente, inserindo paradas subsequentes conforme as anteriores são processadas, até que todas as corridas sejam concluídas.
 
 % =================================================================
 % 4. ANÁLISE DE COMPLEXIDADE
