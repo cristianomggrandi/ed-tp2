@@ -23,14 +23,9 @@ int main()
     scanf("%d", &demand_number);
 
     if (!validate_config_params(max_capacity, speed, max_departure_interval, 
-                                max_origin_distance, max_destination_distance, min_ride_efficiency))
+                                max_origin_distance, max_destination_distance, min_ride_efficiency, demand_number))
     {
         return 1; // Encerra com código de erro
-    }
-
-    if (!validate_demand_count(demand_number))
-    {
-        return 1;
     }
 
     struct MinHeap scheduler;

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.11.24)  25 NOV 2025 22:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.11.24)  25 NOV 2025 23:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -387,6 +387,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package hyperref Info: Link coloring OFF on input line 42.
+ (documentacao.out) (documentacao.out)
 \@outlinefile=\write3
 \openout3 = `documentacao.out'.
 
@@ -394,283 +395,194 @@ Package hyperref Info: Link coloring OFF on input line 42.
  [1
 
 {C:/Users/crist/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 89.
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 88.
  (C:\Users\crist\AppData\Local\Programs\MiKTeX\tex/latex/base\t1cmtt.fd
 File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.101 
-       [1]
-Overfull \hbox (1.0041pt too wide) in paragraph at lines 120--121
-[]\T1/cmtt/m/n/12 remove_last_added_demand(Ride*)\T1/cmr/m/n/12 : Re-move a úl-tima de-manda adi-ci-o-nada (usado
- []
-
-[2]
-Overfull \hbox (12.86382pt too wide) in paragraph at lines 145--146
+l.107         \item \texttt
+                           {create\_new\_ride()}: Aloca e inicializa uma nov... [1]
+Overfull \hbox (12.86382pt too wide) in paragraph at lines 138--139
 []\T1/cmr/m/n/12 Tenta adi-ci-o-nar a de-manda à cor-rida usando \T1/cmtt/m/n/12 add_ride_demand() \T1/cmr/m/n/12 e \T1/cmtt/m/n/12 add_ride_stops() 
  []
 
-
-Overfull \hbox (24.46239pt too wide) in paragraph at lines 147--148
+[2]
+Overfull \hbox (24.46239pt too wide) in paragraph at lines 140--141
 \T1/cmr/m/n/12 move a de-manda usando \T1/cmtt/m/n/12 remove_last_added_demand() \T1/cmr/m/n/12 e \T1/cmtt/m/n/12 remove_last_added_stops() 
  []
 
 [3]
-Overfull \hbox (36.77158pt too wide) in paragraph at lines 206--207
+Overfull \hbox (36.77158pt too wide) in paragraph at lines 199--200
 \T1/cmr/m/n/12 para com-pa-ra-ção de flo-ats) an-tes de cal-cu-lar efi-ci-ên-cia = dis-tân-cia_original/distância_total 
  []
 
 [4]
-
-c:/Users/crist/Documents/projetos/ed-tp2/documentacao.tex:234: LaTeX Error: \begin{document} ended by \end{itemize}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.234     \end{itemize}
-                       
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-c:/Users/crist/Documents/projetos/ed-tp2/documentacao.tex:234: Extra \endgroup.
-<recently read> \endgroup 
-                          
-l.234     \end{itemize}
-                       
-Things are pretty mixed up, but I think the worst is over.
-
-
-c:/Users/crist/Documents/projetos/ed-tp2/documentacao.tex:236: LaTeX Error: Lonely \item--perhaps a missing list environment.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.236     \item \textbf
-                       {Invariantes Temporais:} A funÃ§Ã£o \texttt{validate\...
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-
-Underfull \hbox (badness 10000) detected at line 236
-[][]
- []
-
-
-c:/Users/crist/Documents/projetos/ed-tp2/documentacao.tex:238: LaTeX Error: Lonely \item--perhaps a missing list environment.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.238     \item \textbf
-                       {Invariantes do Heap:} A funÃ§Ã£o \texttt{validate\_h...
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-
-Underfull \hbox (badness 10000) detected at line 238
-[][]
- []
-
-
-c:/Users/crist/Documents/projetos/ed-tp2/documentacao.tex:239: LaTeX Error: \begin{document} ended by \end{itemize}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.239 \end{itemize}
-                   
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-c:/Users/crist/Documents/projetos/ed-tp2/documentacao.tex:239: Extra \endgroup.
-<recently read> \endgroup 
-                          
-l.239 \end{itemize}
-                   
-Things are pretty mixed up, but I think the worst is over.
-
-[5]
-Overfull \hbox (7.12358pt too wide) in paragraph at lines 257--258
+Overfull \hbox (7.12358pt too wide) in paragraph at lines 242--243
 \T1/cmr/m/n/12 au-xi-liar em Python para ge-rar um con-junto de 1000 de-man-das sin-té-ti-cas (\T1/cmtt/m/n/12 input_1000.txt\T1/cmr/m/n/12 ). 
  []
 
-[6]
+[5]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 275.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\alpha' on input line 275.
+(hyperref)                removing `math shift' on input line 260.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 275.
+(hyperref)                removing `\alpha' on input line 260.
 
-<grafico_alpha_corridas.png, id=74, 578.16pt x 433.62pt>
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 260.
+
+<grafico_alpha_corridas.png, id=134, 578.16pt x 433.62pt>
 File: grafico_alpha_corridas.png Graphic file (type png)
 <use grafico_alpha_corridas.png>
-Package pdftex.def Info: grafico_alpha_corridas.png  used on input line 283.
+Package pdftex.def Info: grafico_alpha_corridas.png  used on input line 268.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
-<grafico_alpha_distancia.png, id=76, 578.16pt x 433.62pt>
+[6]
+<grafico_alpha_distancia.png, id=143, 578.16pt x 433.62pt>
 File: grafico_alpha_distancia.png Graphic file (type png)
 <use grafico_alpha_distancia.png>
-Package pdftex.def Info: grafico_alpha_distancia.png  used on input line 290.
+Package pdftex.def Info: grafico_alpha_distancia.png  used on input line 275.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
-[7
+ [7
 pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.294 
-       <./grafico_alpha_corridas.png>]
-<grafico_alpha_proporcao.png, id=84, 578.16pt x 433.62pt>
-File: grafico_alpha_proporcao.png Graphic file (type png)
-<use grafico_alpha_proporcao.png>
-Package pdftex.def Info: grafico_alpha_proporcao.png  used on input line 301.
-(pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
- [8
+l.283 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.305 
-       <./grafico_alpha_distancia.png>]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 308.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\beta' on input line 308.
+l.283 
+       <./grafico_alpha_corridas.png> <./grafico_alpha_distancia.png>]
+<grafico_alpha_proporcao.png, id=152, 578.16pt x 433.62pt>
+File: grafico_alpha_proporcao.png Graphic file (type png)
+<use grafico_alpha_proporcao.png>
+Package pdftex.def Info: grafico_alpha_proporcao.png  used on input line 286.
+(pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 308.
+(hyperref)                removing `math shift' on input line 293.
 
-<grafico_beta_corridas.png, id=91, 578.16pt x 433.62pt>
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\beta' on input line 293.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 293.
+
+<grafico_beta_corridas.png, id=153, 578.16pt x 433.62pt>
 File: grafico_beta_corridas.png Graphic file (type png)
 <use grafico_beta_corridas.png>
-Package pdftex.def Info: grafico_beta_corridas.png  used on input line 314.
+Package pdftex.def Info: grafico_beta_corridas.png  used on input line 299.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
-[9
+[8
 pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.318 
+l.303 
        <./grafico_alpha_proporcao.png>]
-<grafico_beta_distancia.png, id=99, 578.16pt x 433.62pt>
+<grafico_beta_distancia.png, id=160, 578.16pt x 433.62pt>
 File: grafico_beta_distancia.png Graphic file (type png)
 <use grafico_beta_distancia.png>
-Package pdftex.def Info: grafico_beta_distancia.png  used on input line 321.
+Package pdftex.def Info: grafico_beta_distancia.png  used on input line 306.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
- [10
+ [9
 pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.327 
+l.312 
       
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.327 
+l.312 
        <./grafico_beta_corridas.png> <./grafico_beta_distancia.png>]
-<grafico_beta_proporcao.png, id=108, 578.16pt x 433.62pt>
+<grafico_beta_proporcao.png, id=169, 578.16pt x 433.62pt>
 File: grafico_beta_proporcao.png Graphic file (type png)
 <use grafico_beta_proporcao.png>
-Package pdftex.def Info: grafico_beta_proporcao.png  used on input line 334.
+Package pdftex.def Info: grafico_beta_proporcao.png  used on input line 319.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 341.
+(hyperref)                removing `math shift' on input line 326.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\lambda' on input line 341.
+(hyperref)                removing `\lambda' on input line 326.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 341.
+(hyperref)                removing `math shift' on input line 326.
 
-<grafico_lambda_corridas.png, id=109, 578.16pt x 433.62pt>
+<grafico_lambda_corridas.png, id=170, 578.16pt x 433.62pt>
 File: grafico_lambda_corridas.png Graphic file (type png)
 <use grafico_lambda_corridas.png>
-Package pdftex.def Info: grafico_lambda_corridas.png  used on input line 347.
+Package pdftex.def Info: grafico_lambda_corridas.png  used on input line 332.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
-[11
+[10
 pdfTeX warning (ext4): destination with the same identifier (name{figure.6}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.351 
+l.336 
        <./grafico_beta_proporcao.png>]
-<grafico_lambda_distancia.png, id=117, 578.16pt x 433.62pt>
+<grafico_lambda_distancia.png, id=177, 578.16pt x 433.62pt>
 File: grafico_lambda_distancia.png Graphic file (type png)
 <use grafico_lambda_distancia.png>
-Package pdftex.def Info: grafico_lambda_distancia.png  used on input line 354.
+Package pdftex.def Info: grafico_lambda_distancia.png  used on input line 339.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
- [12
+ [11
 pdfTeX warning (ext4): destination with the same identifier (name{figure.7}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.361 A
+l.346 A
         distÃ¢ncia total percorrida pela frota apresenta comportamento inter...
 pdfTeX warning (ext4): destination with the same identifier (name{figure.8}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.361 A
+l.346 A
         distÃ¢ncia total percorrida pela frota apresenta comportamento inter... <./grafico_lambda_corridas.png> <./grafico_lambda_distancia.png>]
-<grafico_lambda_proporcao.png, id=127, 578.16pt x 433.62pt>
+<grafico_lambda_proporcao.png, id=186, 578.16pt x 433.62pt>
 File: grafico_lambda_proporcao.png Graphic file (type png)
 <use grafico_lambda_proporcao.png>
-Package pdftex.def Info: grafico_lambda_proporcao.png  used on input line 365.
+Package pdftex.def Info: grafico_lambda_proporcao.png  used on input line 350.
 (pdftex.def)             Requested size: 364.19667pt x 273.14235pt.
- [13
+ [12
 pdfTeX warning (ext4): destination with the same identifier (name{figure.9}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.378 
+l.363 
        <./grafico_lambda_proporcao.png>]
-Overfull \hbox (19.17961pt too wide) in paragraph at lines 389--390
+Overfull \hbox (19.17961pt too wide) in paragraph at lines 374--375
 []\T1/cmr/m/n/12 WIKIPEDIA. \T1/cmr/m/it/12 Si-mu-la-ção de even-tos dis-cre-tos\T1/cmr/m/n/12 . Dis-po-ní-vel em: []$\T1/cmtt/m/n/12 https : / / pt . wikipedia .
  []
 
-[14] (documentacao.aux)
+[13] (documentacao.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `documentacao.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `documentacao.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  062860665E073054EC8B1FA08C64CAED;4801.
+Package rerunfilecheck Info: File `documentacao.out' has not changed.
+(rerunfilecheck)             Checksum: 05398B2D891624BAC480B472C2DC1C16;4363.
  ) 
 Here is how much of TeX's memory you used:
- 12901 strings out of 474486
- 202180 string characters out of 5743754
+ 12926 strings out of 474486
+ 202638 string characters out of 5743754
  1935542 words of memory out of 5000000
- 34970 multiletter control sequences out of 15000+600000
- 568805 words of font info for 62 fonts, out of 8000000 for 9000
+ 34993 multiletter control sequences out of 15000+600000
+ 569583 words of font info for 63 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,6n,79p,817b,542s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on documentacao.pdf (15 pages, 474128 bytes).
+ 75i,6n,79p,817b,580s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx2074.pk> <C:\Users\crist\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/crist/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on documentacao.pdf (14 pages, 486050 bytes).
 PDF statistics:
- 523 PDF objects out of 1000 (max. 8388607)
- 61 named destinations out of 1000 (max. 500000)
- 46 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 594 PDF objects out of 1000 (max. 8388607)
+ 58 named destinations out of 1000 (max. 500000)
+ 214 words of extra memory for PDF output out of 10000 (max. 10000000)
 

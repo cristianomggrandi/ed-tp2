@@ -8,8 +8,8 @@
 #include "types.h"
 #endif
 
-// Valida os parâmetros de configuração do sistema (eta > 0, gamma > 0, delta >= 0, alpha >= 0, beta >= 0, lambda >= 0)
-bool validate_config_params(int eta, double gamma, double delta, double alpha, double beta, double lambda)
+// Valida os parâmetros de configuração do sistema e o número de demandas
+bool validate_config_params(int eta, double gamma, double delta, double alpha, double beta, double lambda, int num_demands)
 {
     if (eta <= 0)
     {
@@ -53,6 +53,17 @@ bool validate_config_params(int eta, double gamma, double delta, double alpha, d
         return false;
     }
 
+    if (num_demands <= 0)
+    {
+        printf("\nERRO: Número de demandas deve ser positivo. Valor recebido: %d", num_demands);
+        return false;
+    }
+
+    if (num_demands > 100000)
+    {
+        printf("\nAVISO: Número de demandas muito alto (%d). Isso pode causar problemas de desempenho.", num_demands);
+    }
+
     return true;
 }
 
@@ -90,23 +101,6 @@ bool validate_demand(Demand demand)
     {
         printf("\nERRO: Tempo de solicitação negativo para demanda %d: %d", demand.id, demand.time);
         return false;
-    }
-
-    return true;
-}
-
-// Valida o número total de demandas (deve ser > 0, avisa se > 100000)
-bool validate_demand_count(int num_demands)
-{
-    if (num_demands <= 0)
-    {
-        printf("\nERRO: Número de demandas deve ser positivo. Valor recebido: %d", num_demands);
-        return false;
-    }
-
-    if (num_demands > 100000) // Limite razoável para evitar problemas de memória
-    {
-        printf("\nAVISO: Número de demandas muito alto (%d). Isso pode causar problemas de desempenho.", num_demands);
     }
 
     return true;

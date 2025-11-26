@@ -49,14 +49,18 @@
         \textbf{\large UNIVERSIDADE FEDERAL DE MINAS GERAIS}\\
         \textbf{\large DEPARTAMENTO DE CIÊNCIA DA COMPUTAÇÃO}
         
-        \vspace{5cm}
+        \vspace*{\fill}
         
-        \textbf{\Large Trabalho Prático 2 - Sistema de Despacho de Transporte por Aplicativo}
-        
-        \vspace{4cm}
-        
-        \textbf{\large Nome do Aluno Sobrenome} \\ % SUBSTITUA AQUI
-        \textbf{\large Matrícula: 202XXXXX}        % SUBSTITUA AQUI
+        \textbf{\LARGE Trabalho Prático 2} \\
+
+        \vspace{1cm}
+
+        \textbf{\LARGE Sistema de Despacho de Transporte por Aplicativo}
+
+        \vspace{1cm}
+
+        \textbf{\large Cristiano Martins Guimarães Grandi} \\
+        \textbf{\large Matrícula: 2025423440}
         
         \vspace*{\fill}
         
@@ -74,58 +78,47 @@ Com a expansão da empresa multinacional \textit{CabAl} para o Brasil, sob a mar
 
 O problema central abordado neste trabalho é a alocação dinâmica de veículos para atender demandas de transporte, respeitando restrições rígidas de capacidade ($\eta$), tempo ($\delta$), distância espacial ($\alpha, \beta$) e eficiência operacional ($\lambda$). O desafio computacional é identificar, em tempo hábil, quais demandas podem ser combinadas sem violar essas restrições.
 
-A solução empregada utiliza uma abordagem de **Simulação de Eventos Discretos (SED)**. Diferente de uma simulação contínua, o sistema modelado avança o tempo através de saltos discretos marcados pela ocorrência de eventos (solicitações de corrida, chegadas e partidas), gerenciados por uma estrutura de fila de prioridade (\textit{MinHeap}). Isso permite processar um grande volume de demandas de forma cronológica e eficiente.
+A solução empregada utiliza uma abordagem de \textbf{Simulação de Eventos Discretos (SED)}. Diferente de uma simulação contínua, o sistema modelado avança o tempo através de saltos discretos marcados pela ocorrência de eventos (solicitações de corrida, chegadas e partidas), gerenciados por uma estrutura de fila de prioridade (\textit{MinHeap}). Isso permite processar um grande volume de demandas de forma cronológica e eficiente.
 
 % =================================================================
 % 3. MÉTODO
 % =================================================================
 \section{Método}
 
-A implementação foi realizada na linguagem C, estruturada de forma modular para separar a lógica de estruturas de dados da lógica de simulação. O sistema baseia-se em quatro Tipos Abstratos de Dados (TADs) principais:
+A implementação foi realizada na linguagem C, estruturada de forma modular com separação clara entre tipos de dados (\texttt{types.h}), estruturas de dados (\texttt{minheap.h}), lógica de corridas (\texttt{ride.h}), funções auxiliares (\texttt{util.h}) e fluxo principal (\texttt{main.c}). O sistema baseia-se em quatro Tipos Abstratos de Dados (TADs) principais:
 
-\subsection{Estruturas de Dados}
+\subsection{Tipos Abstratos de Dados}
 
 \begin{itemize}
     \item \textbf{MinHeap (Escalonador):} Implementado em \texttt{minheap.h}, atua como o motor da simulação. É uma fila de prioridade que armazena eventos (paradas) ordenados pelo tempo. A operação \texttt{get\_next} garante que o sistema sempre processe o evento mais iminente, fundamental para a corretude cronológica da SED.
-    
+
+    \begin{itemize}
+        \item \texttt{initialize(MinHeap*, int)}: Aloca memória para o heap com tamanho especificado
+        \item \texttt{insert\_new(MinHeap*, RideStop*, double)}: Insere uma nova parada no heap, calculando seu tempo e mantendo a propriedade de heap mínimo através de \textit{heapify}
+        \item \texttt{get\_next(MinHeap*)}: Remove e retorna a parada com menor tempo, restaurando a propriedade de heap através de \textit{heapify}
+        \item \texttt{peek(MinHeap*)}: Retorna a próxima parada sem removê-la
+        \item \texttt{finalize(MinHeap*, double)}: Processa todos os eventos restantes, imprimindo os resultados das corridas
+    \end{itemize}
+
+
     \item \textbf{Ride (Corrida):} Definida em \texttt{types.h} e manipulada em \texttt{ride.h}, esta estrutura agrega as informações de uma viagem, contendo uma lista de passageiros (demandas) e uma lista encadeada de paradas (\texttt{RideStop}). Ela gerencia o estado da corrida (individual ou compartilhada) e calcula métricas como a eficiência.
     
-    \item \textbf{RideStop (Parada):} Representa os vértices do trajeto (origens e destinos). Implementada como uma lista duplamente encadeada dentro da estrutura \texttt{Ride}, permitindo a inserção e remoção dinâmica de pontos de coleta e entrega conforme novas demandas são avaliadas para compartilhamento.
+    \begin{itemize}
+        \item \texttt{create\_new\_ride()}: Aloca e inicializa uma nova corrida vazia
+        \item \texttt{add\_ride\_demand(Ride*, Demand)}: Adiciona uma demanda à corrida, atualizando o status (SINGLE ou COMBINED)
+        \item \texttt{add\_ride\_stops(Ride*, Demand, double)}: Insere as paradas de origem e destino na lista encadeada de paradas, mantendo a ordem: todas as origens primeiro, seguidas de todos os destinos
+        \item \texttt{calculate\_ride\_efficiency(Ride)}: Calcula a eficiência como a razão entre a soma das distâncias diretas de cada passageiro e a distância total percorrida
+        \item \texttt{get\_ride\_total\_distance(Ride)}: Percorre a lista de paradas calculando a distância total do trajeto
+        \item \texttt{remove\_last\_added\_demand(Ride*)}: Remove a última demanda adicionada (usado quando uma tentativa de compartilhamento falha)
+        \item \texttt{remove\_last\_added\_stops(Ride*)}: Remove as duas últimas paradas (origem e destino) da lista encadeada
+    \end{itemize}
+
+    \item \textbf{RideStop (Parada):} Representa uma parada (origem ou destino) no trajeto. Implementada como nó de lista duplamente encadeada, contém coordenadas $(x, y)$, tempo de chegada, distância acumulada, tipo (origem ou destino), ID da demanda associada e ponteiros para a corrida e paradas adjacentes.
     
-    \item \textbf{Demand (Demanda):} Armazena os dados brutos da solicitação do usuário (ID, tempo de solicitação, coordenadas de origem e destino).
+    \item \textbf{Demand (Demanda):} Armazena informações de uma solicitação: ID, tempo de solicitação, status (demandada, individual, combinada ou finalizada) e estruturas RideStop para origem e destino.
 \end{itemize}
 
-\subsection{Descrição Detalhada da Implementação}
-
-A implementação segue uma arquitetura modular com separação clara entre tipos de dados (\texttt{types.h}), estruturas de dados (\texttt{minheap.h}), lógica de corridas (\texttt{ride.h}), funções auxiliares (\texttt{util.h}) e fluxo principal (\texttt{main.c}).
-
-\subsubsection{Tipos Abstratos de Dados}
-
-\textbf{MinHeap:} Implementa uma fila de prioridade baseada em heap binário mínimo. As principais operações são:
-\begin{itemize}
-    \item \texttt{initialize(MinHeap*, int)}: Aloca memória para o heap com tamanho especificado
-    \item \texttt{insert\_new(MinHeap*, RideStop*, double)}: Insere uma nova parada no heap, calculando seu tempo e mantendo a propriedade de heap mínimo através de \textit{heapify-up}
-    \item \texttt{get\_next(MinHeap*)}: Remove e retorna a parada com menor tempo, restaurando a propriedade de heap através de \textit{heapify-down}
-    \item \texttt{peek(MinHeap*)}: Retorna a próxima parada sem removê-la
-    \item \texttt{finalize(MinHeap*, double)}: Processa todos os eventos restantes, imprimindo os resultados das corridas
-\end{itemize}
-
-\textbf{Ride:} Representa uma corrida compartilhada. Principais funções:
-\begin{itemize}
-    \item \texttt{create\_new\_ride()}: Aloca e inicializa uma nova corrida vazia
-    \item \texttt{add\_ride\_demand(Ride*, Demand)}: Adiciona uma demanda à corrida, atualizando o status (SINGLE ou COMBINED)
-    \item \texttt{add\_ride\_stops(Ride*, Demand, double)}: Insere as paradas de origem e destino na lista encadeada de paradas, mantendo a ordem: todas as origens primeiro, seguidas de todos os destinos
-    \item \texttt{calculate\_ride\_efficiency(Ride)}: Calcula a eficiência como a razão entre a soma das distâncias diretas de cada passageiro e a distância total percorrida
-    \item \texttt{get\_ride\_total\_distance(Ride)}: Percorre a lista de paradas calculando a distância total do trajeto
-    \item \texttt{remove\_last\_added\_demand(Ride*)}: Remove a última demanda adicionada (usado quando uma tentativa de compartilhamento falha)
-    \item \texttt{remove\_last\_added\_stops(Ride*)}: Remove as duas últimas paradas (origem e destino) da lista encadeada
-\end{itemize}
-
-\textbf{RideStop:} Representa uma parada (origem ou destino) no trajeto. Implementada como nó de lista duplamente encadeada, contém coordenadas $(x, y)$, tempo de chegada, distância acumulada, tipo (ORIGIN ou DESTINATION), ID da demanda associada e ponteiros para a corrida e paradas adjacentes.
-
-\textbf{Demand:} Armazena informações de uma solicitação: ID, tempo de solicitação, status (DEMANDED, SINGLE, COMBINED, FINISHED) e estruturas RideStop para origem e destino.
-
-\subsubsection{Funções Auxiliares}
+\subsection{Funções Auxiliares}
 
 O módulo \texttt{util.h} fornece funções de suporte:
 \begin{itemize}
@@ -231,14 +224,6 @@ Implementada no módulo \texttt{invariants.h}, esta estratégia verifica proprie
 \end{itemize}
 
 Estas validações são chamadas em pontos críticos (antes de finalizar o heap) e ajudam a detectar bugs de lógica durante desenvolvimento e testes.
-    \end{itemize}
-    
-    \item \textbf{Invariantes Temporais:} A função \texttt{validate\_ride\_temporal\_consistency()} verifica que os tempos de paradas são monotonicamente crescentes ao longo da corrida.
-    
-    \item \textbf{Invariantes do Heap:} A função \texttt{validate\_heap\_times()} verifica que todos os tempos no MinHeap são não-negativos, e \texttt{is\_valid\_minheap()} verifica a propriedade de heap mínimo.
-\end{itemize}
-
-Estas validações são chamadas em pontos críticos (após adicionar/remover demandas, antes de finalizar o heap) e ajudam a detectar bugs de lógica durante desenvolvimento e testes.
 
 \subsection{Consistência Geométrica}
 
