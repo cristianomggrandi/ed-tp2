@@ -171,13 +171,78 @@ A eficiência do sistema depende majoritariamente das operações no \texttt{Min
 % =================================================================
 \section{Estratégias de Robustez}
 
-Para garantir a estabilidade do sistema, foram adotadas práticas de programação defensiva:
+Para garantir a estabilidade e confiabilidade do sistema, foram implementadas cinco estratégias principais de programação defensiva, organizadas em um módulo dedicado de validação e verificação:
 
-\begin{enumerate}
-    \item \textbf{Validação de Ponteiros e Memória:} Funções críticas como \texttt{create\_new\_ride} e \texttt{initialize} utilizam \texttt{malloc}. Embora o código simplificado assuma sucesso, a estrutura permite verificação de \texttt{NULL} para evitar \textit{segmentation faults} em ambientes com memória restrita.
-    \item \textbf{Verificações de Estado do Heap:} As funções \texttt{get\_next} e \texttt{is\_valid\_minheap} (em \texttt{minheap.h}) incluem verificações explícitas para evitar acesso a posições inválidas ou operações em filas vazias, emitindo mensagens de erro ("ERRO: MinHeap vazio") ao invés de colapsar silenciosamente.
-    \item \textbf{Consistência Geométrica:} O cálculo de distâncias utiliza a função \texttt{hypot} da biblioteca matemática, garantindo precisão em ponto flutuante e tratamento adequado de coordenadas, evitando erros de cálculo manual de raiz quadrada.
-\end{enumerate}
+\subsection{Validação de Entrada}
+
+Implementada no módulo \texttt{validation.h}, esta estratégia valida todos os dados de entrada antes do processamento:
+
+\begin{itemize}
+    \item \textbf{Parâmetros de Configuração:} A função \texttt{validate\_config\_params()} verifica se os parâmetros do sistema estão em intervalos válidos: capacidade $\eta > 0$ e $\eta \leq$ MAX\_CAPACITY, velocidade $\gamma > 0$, tempo máximo de espera $\delta \geq 0$, distâncias máximas $\alpha, \beta \geq 0$, e eficiência mínima $\lambda \in [0,1]$. Valores fora desses intervalos causam encerramento controlado do programa com mensagem de erro descritiva.
+    
+    \item \textbf{Validação de Demandas:} A função \texttt{validate\_demand()} verifica cada solicitação individualmente, garantindo que coordenadas sejam válidas, que origem e destino sejam diferentes (distância $> 0.01$), e que o tempo de solicitação seja não-negativo. Demandas inválidas são descartadas com aviso, permitindo que o sistema continue processando as demais.
+    
+    \item \textbf{Contagem de Demandas:} A função \texttt{validate\_demand\_count()} verifica se o número de demandas é positivo e emite aviso se exceder 100.000, indicando possível problema de desempenho.
+\end{itemize}
+
+\subsection{Verificação de Alocação de Memória}
+
+Todas as chamadas a \texttt{malloc()} foram instrumentadas com verificação de retorno NULL:
+
+\begin{itemize}
+    \item \texttt{create\_new\_ride()}: Verifica alocação de estrutura Ride
+    \item \texttt{initialize()}: Verifica alocação do array de paradas do MinHeap
+    \item \texttt{create\_new\_stop()}: Verifica alocação de cada parada individual
+\end{itemize}
+
+Em caso de falha de alocação, o sistema imprime mensagem de erro detalhada e encerra com \texttt{exit(1)}, prevenindo segmentation faults por acesso a ponteiros NULL.
+
+\subsection{Proteção contra Divisão por Zero}
+
+Operações aritméticas críticas foram protegidas contra divisão por zero:
+
+\begin{itemize}
+    \item \texttt{calculate\_stop\_time()}: Verifica se velocidade $> 0$ antes de calcular tempo = distância/velocidade
+    \item \texttt{calculate\_ride\_efficiency()}: Verifica se distância total $> 0.0001$ (tolerância para comparação de floats) antes de calcular eficiência = distância\_original/distância\_total
+\end{itemize}
+
+Estas verificações previnem resultados que corromperiam o estado do sistema.
+
+\subsection{Verificação de Limites de Arrays}
+
+Implementada proteção contra buffer overflow no array \texttt{demands[MAX\_CAPACITY]}:
+
+\begin{itemize}
+    \item \texttt{add\_ride\_demand()}: Verifica se \texttt{demand\_number < MAX\_CAPACITY} antes de adicionar
+    \item \texttt{remove\_last\_added\_demand()}: Verifica se \texttt{demand\_number > 0} antes de remover
+    \item \texttt{meets\_distance\_criteria()}: Verifica se \texttt{demand\_number $\leq$ MAX\_CAPACITY} antes de iterar
+\end{itemize}
+
+Violações de limites resultam em mensagem de erro e aborto da operação, prevenindo corrupção de memória.
+
+\subsection{Validação de Invariantes de Estruturas de Dados}
+
+Implementada no módulo \texttt{invariants.h}, esta estratégia verifica propriedades estruturais que devem sempre ser verdadeiras:
+
+\begin{itemize}
+    \item \textbf{Invariantes Temporais:} A função \texttt{validate\_ride\_temporal\_consistency()} verifica que os tempos de paradas são monotonicamente crescentes ao longo da corrida, garantindo a consistência temporal do sistema.
+    
+    \item \textbf{Invariantes do Heap:} A função \texttt{validate\_heap\_times()} verifica que todos os tempos no MinHeap são não-negativos, e \texttt{is\_valid\_minheap()} verifica a propriedade de heap mínimo (cada pai tem tempo menor ou igual aos filhos).
+\end{itemize}
+
+Estas validações são chamadas em pontos críticos (antes de finalizar o heap) e ajudam a detectar bugs de lógica durante desenvolvimento e testes.
+    \end{itemize}
+    
+    \item \textbf{Invariantes Temporais:} A função \texttt{validate\_ride\_temporal\_consistency()} verifica que os tempos de paradas são monotonicamente crescentes ao longo da corrida.
+    
+    \item \textbf{Invariantes do Heap:} A função \texttt{validate\_heap\_times()} verifica que todos os tempos no MinHeap são não-negativos, e \texttt{is\_valid\_minheap()} verifica a propriedade de heap mínimo.
+\end{itemize}
+
+Estas validações são chamadas em pontos críticos (após adicionar/remover demandas, antes de finalizar o heap) e ajudam a detectar bugs de lógica durante desenvolvimento e testes.
+
+\subsection{Consistência Geométrica}
+
+O cálculo de distâncias utiliza a função \texttt{hypot()} da biblioteca matemática padrão, garantindo precisão em ponto flutuante e tratamento adequado de casos extremos (coordenadas muito grandes ou muito pequenas), evitando erros de overflow/underflow que ocorreriam com cálculo manual de $\sqrt{x^2 + y^2}$.
 
 % =================================================================
 % 6. ANÁLISE EXPERIMENTAL

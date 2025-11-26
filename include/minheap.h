@@ -17,6 +17,7 @@ int get_right_node_index(int index);
 int is_valid_minheap(MinHeap *min_heap);
 void finalize(MinHeap *min_heap, double speed);
 
+// Função auxiliar para debug: imprime todos os tempos no heap
 void print_all(MinHeap *min_heap)
 {
     printf("\nPRINT HEAP %d:", min_heap->size);
@@ -25,12 +26,21 @@ void print_all(MinHeap *min_heap)
         printf(" %lf", min_heap->stops[i].time);
 }
 
+// Inicializa o MinHeap alocando memória para o array de paradas com capacidade especificada
 void initialize(MinHeap *min_heap, int size)
 {
     min_heap->stops = (RideStop *)malloc(size * sizeof(RideStop));
+    
+    if (min_heap->stops == NULL)
+    {
+        printf("\nERRO FATAL: Falha ao alocar memória para MinHeap (tamanho: %d)", size);
+        exit(1);
+    }
+    
     min_heap->size = 0;
 }
 
+// Insere uma nova parada no MinHeap, calculando seu tempo e mantendo a propriedade de heap mínimo
 void insert_new(MinHeap *min_heap, RideStop *stop, double speed)
 {
     int index = min_heap->size;
@@ -56,6 +66,7 @@ void insert_new(MinHeap *min_heap, RideStop *stop, double speed)
     }
 }
 
+// Remove e retorna a parada com menor tempo do MinHeap, restaurando a propriedade de heap
 RideStop get_next(MinHeap *min_heap)
 {
     if (min_heap->size == 0)
@@ -103,19 +114,25 @@ RideStop get_next(MinHeap *min_heap)
     return next;
 }
 
+// Retorna a parada com menor tempo sem removê-la do heap
 RideStop peek(MinHeap *min_heap)
 {
     return min_heap->stops[0];
 }
 
+// Calcula o índice do pai de um nó no heap: (index - 1) / 2
 int get_parent_index(int index)
 {
     return (index - 1) / 2;
 }
+
+// Calcula o índice do filho esquerdo de um nó no heap: index * 2 + 1
 int get_left_node_index(int index)
 {
     return index * 2 + 1;
 }
+
+// Calcula o índice do filho direito de um nó no heap: index * 2 + 2
 int get_right_node_index(int index)
 {
     return index * 2 + 2;
@@ -149,9 +166,15 @@ int is_valid_minheap(MinHeap *min_heap)
     return 1;
 }
 
+// Processa todos os eventos do heap em ordem cronológica, imprime resultados e libera memória
 void finalize(MinHeap *min_heap, double speed)
 {
     struct RideStop stop;
+
+    if (!is_valid_minheap(min_heap))
+    {
+        printf("\nAVISO: MinHeap inválido ao iniciar finalização");
+    }
 
     while (min_heap->size > 0)
     {

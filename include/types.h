@@ -38,15 +38,6 @@ typedef struct Demand
     RideStop destination;
 } Demand;
 
-typedef struct Segment
-{
-    int type;
-    RideStop start;
-    RideStop end;
-    double distance;
-    struct Segment *next;
-} Segment;
-
 typedef struct Ride
 {
     int demand_number;

@@ -7,6 +7,7 @@
 #include "types.h"
 #endif
 #include "ride.h"
+#include "validation.h"
 
 int main()
 {
@@ -20,6 +21,17 @@ int main()
     scanf("%lf", &max_destination_distance);
     scanf("%lf", &min_ride_efficiency);
     scanf("%d", &demand_number);
+
+    if (!validate_config_params(max_capacity, speed, max_departure_interval, 
+                                max_origin_distance, max_destination_distance, min_ride_efficiency))
+    {
+        return 1; // Encerra com código de erro
+    }
+
+    if (!validate_demand_count(demand_number))
+    {
+        return 1;
+    }
 
     struct MinHeap scheduler;
     initialize(&scheduler, demand_number);
@@ -38,6 +50,12 @@ int main()
               &demand.origin.y,
               &demand.destination.x,
               &demand.destination.y);
+
+        if (!validate_demand(demand))
+        {
+            printf("\nPulando demanda inválida %d", demand.id);
+            continue;
+        }
 
         if (new_ride == NULL)
         {

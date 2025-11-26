@@ -2,3 +2,4 @@ output/
 bin/
 **/*.o
 **/*.exe
+.vscode/

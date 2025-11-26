@@ -22,9 +22,17 @@ void add_ride_stops(Ride *ride, Demand demand, double speed);
 void remove_last_added_stops(Ride *ride);
 double calculate_stop_time(RideStop *stop, double speed);
 
+// Cria e inicializa uma nova corrida vazia, alocando memória e inicializando campos
 Ride *create_new_ride()
 {
     Ride *ride = (Ride *)malloc(sizeof(Ride));
+    
+    if (ride == NULL)
+    {
+        printf("\nERRO FATAL: Falha ao alocar memória para Ride");
+        exit(1);
+    }
+    
     ride->demand_number = 0;
     ride->stop_number = 0;
     ride->stops = NULL;
@@ -32,9 +40,17 @@ Ride *create_new_ride()
     return ride;
 }
 
+// Cria uma nova parada (origem ou destino) com coordenadas, calculando distância e tempo acumulados
 RideStop *create_new_stop(double x, double y, Ride *ride, Demand demand, RideStop *prev, double speed, RideStopType type)
 {
     RideStop *new_stop = (RideStop *)malloc(sizeof(RideStop));
+    
+    if (new_stop == NULL)
+    {
+        printf("\nERRO FATAL: Falha ao alocar memória para RideStop");
+        exit(1);
+    }
+    
     new_stop->x = x;
     new_stop->y = y;
     new_stop->prev = prev;
@@ -67,6 +83,7 @@ RideStop *create_new_stop(double x, double y, Ride *ride, Demand demand, RideSto
     return new_stop;
 }
 
+// Calcula a eficiência da corrida: (soma distâncias diretas) / (distância total percorrida)
 double calculate_ride_efficiency(Ride ride)
 {
     if (ride.stop_number < 2)
@@ -79,6 +96,12 @@ double calculate_ride_efficiency(Ride ride)
     if (total_distance == -1)
         printf("\nERRO: Erro calculando distancia total para calcular eficiencia");
 
+    if (total_distance < 0.0001) // Tolerância para comparação de floats
+    {
+        printf("\nERRO: Distância total muito próxima de zero (%.6f) para calcular eficiência", total_distance);
+        return -1;
+    }
+
     double original_distance = get_sum_of_ride_demands_distances(ride);
 
     double efficiency = original_distance / total_distance;
@@ -89,6 +112,7 @@ double calculate_ride_efficiency(Ride ride)
     return efficiency;
 }
 
+// Calcula a soma das distâncias diretas (origem-destino) de todas as demandas da corrida
 double get_sum_of_ride_demands_distances(Ride ride)
 {
     double sum = 0;
@@ -99,6 +123,7 @@ double get_sum_of_ride_demands_distances(Ride ride)
     return sum;
 }
 
+// Calcula a distância total percorrida pelo veículo ao longo de todas as paradas
 double get_ride_total_distance(Ride ride)
 {
     RideStop *stop = ride.stops;
@@ -120,8 +145,15 @@ double get_ride_total_distance(Ride ride)
     return distance;
 }
 
+// Adiciona uma demanda ao array de demandas da corrida, verificando capacidade e atualizando status
 void add_ride_demand(Ride *ride, Demand demand)
 {
+    if (ride->demand_number >= MAX_CAPACITY)
+    {
+        printf("\nERRO: Tentativa de adicionar demanda além da capacidade máxima (%d)", MAX_CAPACITY);
+        return;
+    }
+
     ride->demands[ride->demand_number] = demand;
     ride->demand_number++;
 
@@ -134,8 +166,15 @@ void add_ride_demand(Ride *ride, Demand demand)
         }
 }
 
+// Remove a última demanda adicionada à corrida, atualizando o status das demandas restantes
 void remove_last_added_demand(Ride *ride)
 {
+    if (ride->demand_number <= 0)
+    {
+        printf("\nERRO: Tentativa de remover demanda de corrida vazia");
+        return;
+    }
+
     ride->demand_number--;
 
     if (ride->demand_number == 1)
@@ -147,6 +186,7 @@ void remove_last_added_demand(Ride *ride)
         }
 }
 
+// Adiciona as paradas (origem e destino) de uma demanda à lista encadeada da corrida
 void add_ride_stops(Ride *ride, Demand demand, double speed)
 {
     if (ride->stop_number == 0)
@@ -187,6 +227,7 @@ void add_ride_stops(Ride *ride, Demand demand, double speed)
     ride->stop_number += 2;
 }
 
+// Remove as duas últimas paradas adicionadas (origem e destino), reconectando a lista encadeada
 void remove_last_added_stops(Ride *ride)
 {
     if (ride->stop_number == 0)
@@ -224,10 +265,17 @@ void remove_last_added_stops(Ride *ride)
     ride->stop_number -= 2;
 }
 
+// Calcula o tempo de chegada em uma parada baseado na distância acumulada e velocidade
 double calculate_stop_time(RideStop *stop, double speed)
 {
     if (stop->ride->stops == NULL)
         return -1;
+
+    if (speed <= 0)
+    {
+        printf("\nERRO: Velocidade inválida (%.2f) para calcular tempo de parada", speed);
+        return -1;
+    }
 
     RideStop *curr_stop = stop->ride->stops;
 
